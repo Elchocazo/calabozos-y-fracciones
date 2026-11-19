@@ -971,10 +971,11 @@
               <div id="slot-armor" class="equip-slot-box" title="Ranura de Peto / Armadura"></div>
               <div id="slot-boots" class="equip-slot-box" title="Ranura de Parte de Abajo / Botas"></div>
             </div>
-            <!-- Centro: Héroe Pixel Art -->
+            <!-- Centro: Héroe Pixel Art + Ranura de Capa -->
             <div class="doll-center">
-              <canvas id="inv-hero-canvas" width="32" height="36"></canvas>
+              <canvas id="inv-hero-canvas" width="36" height="38"></canvas>
               <div id="inv-hero-name" style="font-size:13px; font-weight:800; color:#fff;">Héroe</div>
+              <div id="slot-cape" class="equip-slot-box" style="width:86px; height:64px;" title="Ranura de Capa"></div>
             </div>
             <!-- Derecha: Arma, Escudo, Accesorio -->
             <div class="doll-col">
@@ -1040,6 +1041,8 @@
       escudoMadera: { id: 'escudoMadera', name: 'Escudo de Madera', type: 'shield', rarity: 'uncommon', cost: 60, defenseBonus: 2, description: 'Absorbe un error antes de romperse.' },
       espadaOxidada: { id: 'espadaOxidada', name: 'Espada Oxidada', type: 'weapon', rarity: 'uncommon', cost: 90, damageBonus: 4, description: 'Vieja pero contundente.' },
       armaduraCuero: { id: 'armaduraCuero', name: 'Armadura de Cuero', type: 'armor', rarity: 'uncommon', cost: 80, defenseBonus: 3, description: 'Resistente y ligera.' },
+      capaViajero: { id: 'capaViajero', name: 'Capa del Viajero', type: 'cape', rarity: 'common', cost: 55, defenseBonus: 1, xpBonus: 0.05, description: 'Ondeante capa azul de aventurero (+5% XP).' },
+      capaReal: { id: 'capaReal', name: 'Capa Real Carmesí', type: 'cape', rarity: 'epic', cost: 140, defenseBonus: 3, damageBonus: 2, description: 'Capa real con borde de oro puro.' },
       // Poco Comunes (Loot)
       botasCueroMord: { id: 'botasCueroMord', name: 'Botas Mordisqueadas', type: 'boots', rarity: 'uncommon', damageBonus: 0, defenseBonus: 2, description: 'Tienen carácter goblin.' },
       dagaPicaro: { id: 'dagaPicaro', name: 'Daga de Pícaro', type: 'weapon', rarity: 'uncommon', damageBonus: 3, description: 'Perfecta para ataques rápidos.' },
@@ -1054,7 +1057,7 @@
       brocheRey: { id: 'brocheRey', name: 'Broche del Rey Grasiento', type: 'helmet', rarity: 'epic', defenseBonus: 5, description: 'Reliquia del Rey Panza.' },
       cetroRey: { id: 'cetroRey', name: 'Cetro de Mando Grasiento', type: 'weapon', rarity: 'epic', damageBonus: 6, description: 'El arma de un rey glotón.' },
       cinturonRey: { id: 'cinturonRey', name: 'Cinturón del Rey', type: 'amulet', rarity: 'epic', damageBonus: 2, defenseBonus: 3, description: 'Ha visto muchas batallas.' },
-      capaEsporas: { id: 'capaEsporas', name: 'Capa de Esporas', type: 'armor', rarity: 'epic', defenseBonus: 4, description: 'Confunde a los enemigos.' },
+      capaEsporas: { id: 'capaEsporas', name: 'Capa de Esporas', type: 'cape', rarity: 'epic', defenseBonus: 4, description: 'Capa mágica que libera esporas brillantes.' },
       flautaEncantada: { id: 'flautaEncantada', name: 'Flauta Encantada', type: 'amulet', rarity: 'epic', xpBonus: 0.25, description: 'Acelera tu aprendizaje (+25% XP).' },
       // Legendarios
       plumaRogelio: { id: 'plumaRogelio', name: 'Pluma de Rogelio', type: 'amulet', rarity: 'legendary', damageBonus: 4, description: 'Irradia poder mágico.' },
@@ -1165,7 +1168,7 @@
         xp: 0,
         xpNext: 50,
         baseDamage: 12,
-        equipped: { helmet: null, armor: null, weapon: null, shield: null, amulet: null, boots: null },
+        equipped: { helmet: null, armor: null, weapon: null, shield: null, amulet: null, boots: null, cape: null },
         backpack: [],
         boostTurns: 0,
         correctAnswersTotal: 0,
@@ -1802,55 +1805,231 @@
       }
     }
 
-    function drawPixelHero(targetCtx, ox, oy, avatarDef, colorMode = 'normal', alpha = 1, attacking = false, walkPhase = 0) {
+    function drawPixelHero(targetCtx, ox, oy, avatarDef, colorMode = 'normal', alpha = 1, attacking = false, walkPhase = 0, equippedObj = gameState.player.equipped) {
       targetCtx.save();
       targetCtx.globalAlpha = alpha;
       if (colorMode === 'red') { targetCtx.fillStyle = '#ff2030'; targetCtx.fillRect(ox + 1, oy + 2, 15, 20); targetCtx.restore(); return; }
       if (colorMode === 'cyan') { targetCtx.fillStyle = '#00f7ff'; targetCtx.fillRect(ox + 1, oy + 2, 15, 20); targetCtx.restore(); return; }
       if (colorMode === 'magenta') { targetCtx.fillStyle = '#ff0055'; targetCtx.fillRect(ox + 1, oy + 2, 15, 20); targetCtx.restore(); return; }
 
-      // Sombrero opcional
-      if (avatarDef.hat) {
+      const eq = equippedObj || {};
+      const sway = Math.round(Math.sin(performance.now() * 0.008 + walkPhase) * 1.2);
+
+      // 1. CAPA (detrás del cuerpo, ondeando suavemente)
+      if (eq.cape === 'capaViajero') {
+        targetCtx.fillStyle = '#1d4ed8';
+        targetCtx.fillRect(ox - 2 + sway, oy + 12, 6, 9);
+        targetCtx.fillStyle = '#38bdf8';
+        targetCtx.fillRect(ox - 2 + sway, oy + 19, 6, 2);
+      } else if (eq.cape === 'capaEsporas') {
+        targetCtx.fillStyle = '#7e22ce';
+        targetCtx.fillRect(ox - 3 + sway, oy + 11, 7, 10);
+        targetCtx.fillStyle = '#38f8d4';
+        targetCtx.fillRect(ox - 2 + sway, oy + 14, 2, 2);
+        targetCtx.fillStyle = '#f472b6';
+        targetCtx.fillRect(ox + sway, oy + 18, 2, 2);
+      } else if (eq.cape === 'capaReal') {
+        targetCtx.fillStyle = '#b91c1c';
+        targetCtx.fillRect(ox - 3 + sway, oy + 11, 8, 11);
+        targetCtx.fillStyle = '#fbbf24';
+        targetCtx.fillRect(ox - 3 + sway, oy + 20, 8, 2);
+        targetCtx.fillRect(ox + 1, oy + 12, 3, 2);
+      }
+
+      // 2. CABEZA: Pelo o Sombrero base (si no lleva casco)
+      if (!eq.helmet && avatarDef.hat) {
         targetCtx.fillStyle = avatarDef.hat;
         targetCtx.fillRect(ox + 4, oy - 3, 8, 3);
         targetCtx.fillRect(ox + 1, oy, 14, 3);
       }
-      // Pelo
       targetCtx.fillStyle = avatarDef.hair;
       targetCtx.fillRect(ox + 3, oy, 10, 4);
       targetCtx.fillRect(ox + 1, oy + 3, 14, 5);
       targetCtx.fillRect(ox + 1, oy + 8, 4, 3);
 
-      // Cara y Ojos
+      // 3. CASCOS ÚNICOS
+      if (eq.helmet === 'cascoCuero') {
+        targetCtx.fillStyle = '#92400e';
+        targetCtx.fillRect(ox + 1, oy - 1, 14, 6);
+        targetCtx.fillStyle = '#d97706';
+        targetCtx.fillRect(ox + 3, oy - 2, 10, 2);
+        targetCtx.fillRect(ox + 1, oy + 4, 15, 2); // visera
+      } else if (eq.helmet === 'brocheRey') {
+        targetCtx.fillStyle = '#fbbf24';
+        targetCtx.fillRect(ox + 2, oy - 3, 12, 5);
+        targetCtx.fillStyle = '#f8fafc'; // huesos del rey
+        targetCtx.fillRect(ox + 1, oy - 5, 3, 3);
+        targetCtx.fillRect(ox + 7, oy - 6, 3, 4);
+        targetCtx.fillRect(ox + 12, oy - 5, 3, 3);
+        targetCtx.fillStyle = '#ef4444';
+        targetCtx.fillRect(ox + 7, oy - 1, 2, 2);
+      } else if (eq.helmet === 'crestaPsitacus') {
+        // Enorme cresta dorada/naranja de cacatúa legendaria
+        targetCtx.fillStyle = '#facc15';
+        targetCtx.fillRect(ox + 3, oy - 7, 3, 8);
+        targetCtx.fillRect(ox + 7, oy - 9, 3, 10);
+        targetCtx.fillRect(ox + 11, oy - 6, 3, 7);
+        targetCtx.fillStyle = '#f97316';
+        targetCtx.fillRect(ox + 7, oy - 10, 3, 3);
+      }
+
+      // 4. CARA Y OJOS
       targetCtx.fillStyle = '#ffd1b3';
       targetCtx.fillRect(ox + 5, oy + 7, 10, 6);
       targetCtx.fillStyle = '#1e1626';
       targetCtx.fillRect(ox + 8, oy + 9, 2, 2);
       targetCtx.fillRect(ox + 13, oy + 9, 2, 2);
 
-      // Ropa
-      targetCtx.fillStyle = avatarDef.shirt;
-      targetCtx.fillRect(ox + 3, oy + 13, 11, 6);
-
-      // Espada / Brazos
-      if (attacking) {
-        targetCtx.fillStyle = '#ffd1b3';
-        targetCtx.fillRect(ox + 14, oy + 13, 4, 3);
-        targetCtx.fillStyle = '#e2e8f0';
-        targetCtx.fillRect(ox + 18, oy + 6, 3, 11);
+      // 5. TORSO / PETOS ÚNICOS
+      if (eq.armor === 'armaduraCuero') {
+        targetCtx.fillStyle = '#78350f';
+        targetCtx.fillRect(ox + 3, oy + 13, 11, 7);
+        targetCtx.fillStyle = '#b45309';
+        targetCtx.fillRect(ox + 4, oy + 14, 9, 4);
         targetCtx.fillStyle = '#fbbf24';
-        targetCtx.fillRect(ox + 16, oy + 14, 5, 2);
+        targetCtx.fillRect(ox + 7, oy + 15, 3, 2); // hebilla de peto
+      } else if (eq.armor === 'togaMagoGoblin') {
+        targetCtx.fillStyle = '#6b21a8';
+        targetCtx.fillRect(ox + 2, oy + 13, 13, 8);
+        targetCtx.fillStyle = '#fbbf24';
+        targetCtx.fillRect(ox + 7, oy + 13, 3, 8); // franja dorada de toga
+        targetCtx.fillStyle = '#c084fc';
+        targetCtx.fillRect(ox + 3, oy + 13, 11, 2);
+      } else {
+        targetCtx.fillStyle = avatarDef.shirt;
+        targetCtx.fillRect(ox + 3, oy + 13, 11, 6);
+      }
+
+      // 6. ACCESORIOS / AMULETOS ÚNICOS
+      if (eq.amulet === 'amuletoPegajoso') {
+        targetCtx.fillStyle = '#84cc16';
+        targetCtx.fillRect(ox + 8, oy + 13, 3, 4);
+        targetCtx.fillStyle = '#ecfccb';
+        targetCtx.fillRect(ox + 9, oy + 14, 1, 2);
+      } else if (eq.amulet === 'fragmentoGolem') {
+        targetCtx.fillStyle = '#64748b';
+        targetCtx.fillRect(ox + 7, oy + 13, 4, 4);
+        targetCtx.fillStyle = '#38f8d4';
+        targetCtx.fillRect(ox + 8, oy + 14, 2, 2);
+      } else if (eq.amulet === 'cinturonRey') {
+        targetCtx.fillStyle = '#451a03';
+        targetCtx.fillRect(ox + 3, oy + 17, 11, 2);
+        targetCtx.fillStyle = '#fbbf24';
+        targetCtx.fillRect(ox + 7, oy + 16, 4, 4);
+      } else if (eq.amulet === 'flautaEncantada') {
+        targetCtx.fillStyle = '#fde047';
+        targetCtx.fillRect(ox + 3, oy + 17, 11, 2);
+        targetCtx.fillStyle = '#38f8d4';
+        targetCtx.fillRect(ox + 13, oy + 16, 2, 2);
+      } else if (eq.amulet === 'plumaRogelio') {
+        targetCtx.fillStyle = '#fef08a';
+        targetCtx.fillRect(ox + 1, oy + 10, 3, 5);
+        targetCtx.fillStyle = '#f97316';
+        targetCtx.fillRect(ox + 1, oy + 9, 2, 2);
+      }
+
+      // 7. ESCUDO ÚNICO (en mano trasera/lateral)
+      if (eq.shield === 'escudoMadera') {
+        targetCtx.fillStyle = '#78350f';
+        targetCtx.fillRect(ox, oy + 13, 5, 7);
+        targetCtx.fillStyle = '#cbd5e1';
+        targetCtx.fillRect(ox, oy + 13, 5, 1);
+        targetCtx.fillRect(ox, oy + 19, 5, 1);
+        targetCtx.fillStyle = '#fbbf24';
+        targetCtx.fillRect(ox + 2, oy + 15, 2, 3);
+      }
+
+      // 8. PIERNAS Y BOTAS ÚNICAS
+      const leg = Math.round(Math.sin(walkPhase) * 2);
+      if (eq.boots === 'sandaliasRotas') {
+        targetCtx.fillStyle = '#d6b28b';
+        targetCtx.fillRect(ox + 4 + leg, oy + 19, 3, 3);
+        targetCtx.fillRect(ox + 10 - leg, oy + 19, 3, 3);
+      } else if (eq.boots === 'botasCueroMord') {
+        targetCtx.fillStyle = '#78350f';
+        targetCtx.fillRect(ox + 3 + leg, oy + 18, 4, 4);
+        targetCtx.fillRect(ox + 9 - leg, oy + 18, 4, 4);
+      } else if (eq.boots === 'sandaliasHojas') {
+        targetCtx.fillStyle = '#22c55e';
+        targetCtx.fillRect(ox + 4 + leg, oy + 19, 4, 3);
+        targetCtx.fillRect(ox + 9 - leg, oy + 19, 4, 3);
+      } else if (eq.boots === 'botasMusgo') {
+        targetCtx.fillStyle = '#3f6212';
+        targetCtx.fillRect(ox + 3 + leg, oy + 18, 4, 4);
+        targetCtx.fillRect(ox + 9 - leg, oy + 18, 4, 4);
+        targetCtx.fillStyle = '#4ade80';
+        targetCtx.fillRect(ox + 3 + leg, oy + 18, 4, 1);
+        targetCtx.fillRect(ox + 9 - leg, oy + 18, 4, 1);
+      } else {
+        targetCtx.fillStyle = '#33202e';
+        targetCtx.fillRect(ox + 4 + leg, oy + 19, 3, 3);
+        targetCtx.fillRect(ox + 10 - leg, oy + 19, 3, 3);
+      }
+
+      // 9. BRAZOS Y ARMAS ÚNICAS (siempre visible si está equipada, y extendida al atacar)
+      const wId = eq.weapon;
+      if (attacking || wId) {
+        const wx = attacking ? ox + 17 : ox + 14;
+        const wy = attacking ? oy + 13 : oy + 15;
+        targetCtx.fillStyle = '#ffd1b3';
+        targetCtx.fillRect(ox + 13, wy, 3, 2);
+
+        if (wId === 'dagaChueca') {
+          targetCtx.fillStyle = '#94a3b8';
+          targetCtx.fillRect(wx, wy - 4, 2, 5);
+          targetCtx.fillRect(wx + 1, wy - 6, 2, 3);
+          targetCtx.fillStyle = '#78350f'; targetCtx.fillRect(wx - 1, wy, 4, 2);
+        } else if (wId === 'espadaOxidada') {
+          targetCtx.fillStyle = '#94a3b8';
+          targetCtx.fillRect(wx, wy - 9, 3, 10);
+          targetCtx.fillStyle = '#c2410c'; // óxido
+          targetCtx.fillRect(wx + 1, wy - 6, 2, 3);
+          targetCtx.fillStyle = '#78350f'; targetCtx.fillRect(wx - 1, wy, 5, 2);
+        } else if (wId === 'dagaPicaro') {
+          targetCtx.fillStyle = '#312e81';
+          targetCtx.fillRect(wx, wy - 7, 2, 8);
+          targetCtx.fillStyle = '#c084fc';
+          targetCtx.fillRect(wx + 1, wy - 8, 2, 6);
+          targetCtx.fillStyle = '#fbbf24'; targetCtx.fillRect(wx - 1, wy, 4, 2);
+        } else if (wId === 'aguijonDuende') {
+          targetCtx.fillStyle = '#e9d5ff';
+          targetCtx.fillRect(wx, wy - 10, 2, 11);
+          targetCtx.fillStyle = '#38f8d4';
+          targetCtx.fillRect(wx, wy - 11, 2, 3);
+          targetCtx.fillStyle = '#a855f7'; targetCtx.fillRect(wx - 1, wy, 4, 2);
+        } else if (wId === 'hojaAfilada') {
+          targetCtx.fillStyle = '#06b6d4';
+          targetCtx.fillRect(wx, wy - 11, 3, 12);
+          targetCtx.fillStyle = '#ffffff';
+          targetCtx.fillRect(wx + 1, wy - 11, 1, 10);
+          targetCtx.fillStyle = '#0284c7'; targetCtx.fillRect(wx - 1, wy, 5, 2);
+        } else if (wId === 'cetroRey') {
+          targetCtx.fillStyle = '#d97706';
+          targetCtx.fillRect(wx, wy - 10, 2, 13);
+          targetCtx.fillStyle = '#fde047';
+          targetCtx.fillRect(wx - 2, wy - 14, 6, 5);
+          targetCtx.fillStyle = '#ef4444';
+          targetCtx.fillRect(wx, wy - 13, 2, 2);
+        } else if (wId === 'garraAfilada') {
+          targetCtx.fillStyle = '#f8fafc';
+          targetCtx.fillRect(wx, wy - 5, 6, 2);
+          targetCtx.fillRect(wx + 1, wy - 2, 6, 2);
+          targetCtx.fillRect(wx, wy + 1, 5, 2);
+          targetCtx.fillStyle = '#fbbf24';
+          targetCtx.fillRect(wx - 1, wy - 4, 2, 6);
+        } else if (attacking) {
+          // Espada inicial por defecto al atacar sin arma equipada
+          targetCtx.fillStyle = '#e2e8f0';
+          targetCtx.fillRect(wx, wy - 8, 3, 10);
+          targetCtx.fillStyle = '#fbbf24';
+          targetCtx.fillRect(wx - 1, wy + 1, 5, 2);
+        }
       } else {
         targetCtx.fillStyle = '#ffd1b3';
         targetCtx.fillRect(ox + 2, oy + 16, 2, 2);
         targetCtx.fillRect(ox + 13, oy + 16, 2, 2);
       }
 
-      // Piernas
-      const leg = Math.round(Math.sin(walkPhase) * 2);
-      targetCtx.fillStyle = '#33202e';
-      targetCtx.fillRect(ox + 4 + leg, oy + 19, 3, 3);
-      targetCtx.fillRect(ox + 10 - leg, oy + 19, 3, 3);
       targetCtx.restore();
     }
 
@@ -2667,11 +2846,16 @@
         }
         ctx.restore();
 
-        // Slash Arc luminoso
+        // Slash Arc luminoso (color acorde al arma equipada)
         if (heroActor.attackState === 'slash') {
+          const wId = gameState.player.equipped.weapon;
+          const slashColor = wId === 'cetroRey' || wId === 'garraAfilada' ? '#fbbf24'
+            : wId === 'dagaPicaro' ? '#c084fc'
+            : wId === 'espadaOxidada' ? '#fb923c'
+            : '#38f8d4';
           ctx.save();
           ctx.translate(heroActor.x + 18, heroActor.y - 12);
-          ctx.fillStyle = '#38f8d4';
+          ctx.fillStyle = slashColor;
           ctx.fillRect(2, -12, 8, 4); ctx.fillRect(8, -5, 9, 5); ctx.fillRect(9, 2, 7, 4);
           ctx.fillStyle = '#ffffff';
           ctx.fillRect(4, -10, 4, 2); ctx.fillRect(9, -3, 5, 3);
@@ -3840,7 +4024,7 @@
         grid.appendChild(div);
       });
 
-      ['cascoCuero', 'escudoMadera', 'espadaOxidada', 'armaduraCuero'].forEach(id => {
+      ['cascoCuero', 'escudoMadera', 'espadaOxidada', 'armaduraCuero', 'capaViajero', 'capaReal'].forEach(id => {
         const it = RPG_ITEMS[id];
         const owned = gameState.player.backpack.includes(id);
         const disabled = owned || gameState.player.coins < it.cost;
@@ -3897,7 +4081,8 @@
       boots:  { label: 'Botas', icon: '🥾' },
       weapon: { label: 'Arma', icon: '⚔️' },
       shield: { label: 'Escudo', icon: '🛡️' },
-      amulet: { label: 'Accesorio', icon: '📿' }
+      amulet: { label: 'Accesorio', icon: '📿' },
+      cape:   { label: 'Capa', icon: '🧥' }
     };
 
     function renderInventoryHeroPreview() {
@@ -3905,52 +4090,24 @@
       if (!invCanvas) return;
       const ictx = invCanvas.getContext('2d');
       ictx.imageSmoothingEnabled = false;
-      ictx.clearRect(0, 0, 32, 36);
+      ictx.clearRect(0, 0, 36, 38);
 
       const avDef = AVATARS.find(a => a.id === gameState.player.avatarId) || AVATARS[0];
       const eq = gameState.player.equipped;
 
       // Pedestal mágico bajo el héroe
       ictx.fillStyle = 'rgba(56, 248, 212, 0.25)';
-      ictx.beginPath(); ictx.ellipse(16, 31, 10, 3, 0, 0, Math.PI * 2); ictx.fill();
+      ictx.beginPath(); ictx.ellipse(18, 33, 11, 3, 0, 0, Math.PI * 2); ictx.fill();
 
-      // Aura de amuleto si tiene accesorio equipado
+      // Aura sutil si lleva accesorio equipado
       if (eq.amulet) {
-        ictx.strokeStyle = 'rgba(192, 132, 252, 0.65)';
+        ictx.strokeStyle = 'rgba(192, 132, 252, 0.55)';
         ictx.lineWidth = 1;
-        ictx.beginPath(); ictx.arc(16, 18, 13, 0, Math.PI * 2); ictx.stroke();
+        ictx.beginPath(); ictx.arc(18, 20, 14, 0, Math.PI * 2); ictx.stroke();
       }
 
-      // Dibujar héroe base centrado
-      drawPixelHero(ictx, 7, 8, avDef, 'normal', 1, !!eq.weapon, 0);
-
-      // Visualizar Casco equipado
-      if (eq.helmet) {
-        ictx.fillStyle = '#fbbf24';
-        ictx.fillRect(9, 6, 12, 4);
-        ictx.fillStyle = '#fde047';
-        ictx.fillRect(11, 4, 8, 2);
-      }
-      // Visualizar Peto / Armadura equipada
-      if (eq.armor) {
-        ictx.fillStyle = '#64748b';
-        ictx.fillRect(10, 21, 11, 6);
-        ictx.fillStyle = '#cbd5e1';
-        ictx.fillRect(12, 22, 7, 2);
-      }
-      // Visualizar Escudo equipado
-      if (eq.shield) {
-        ictx.fillStyle = '#92400e';
-        ictx.fillRect(5, 20, 5, 7);
-        ictx.fillStyle = '#fbbf24';
-        ictx.fillRect(6, 21, 3, 5);
-      }
-      // Visualizar Botas equipadas
-      if (eq.boots) {
-        ictx.fillStyle = '#d97706';
-        ictx.fillRect(11, 27, 3, 3);
-        ictx.fillRect(17, 27, 3, 3);
-      }
+      // Dibujar héroe con TODOS sus ítems únicos equipados
+      drawPixelHero(ictx, 9, 10, avDef, 'normal', 1, false, 0, eq);
     }
 
     function openInventoryModal() {
@@ -4105,7 +4262,7 @@
         card.innerHTML = `<canvas width="24" height="24"></canvas><span>${av.label}</span>`;
         const c = card.querySelector('canvas').getContext('2d');
         c.imageSmoothingEnabled = false;
-        drawPixelHero(c, 3, 2, av);
+        drawPixelHero(c, 3, 2, av, 'normal', 1, false, 0, null);
         card.onclick = () => {
           gameState.player.avatarId = av.id;
           document.querySelectorAll('.avatar-card').forEach(el => el.classList.remove('selected'));
