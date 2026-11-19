@@ -1,0 +1,1773 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Game Feel Complete Suite - @game_feel_prompts</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    }
+    body {
+      background-color: #0e0b14;
+      color: #ede9f5;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      padding: 14px;
+    }
+    header {
+      text-align: center;
+      margin-bottom: 8px;
+    }
+    h1 {
+      font-size: 22px;
+      letter-spacing: -0.5px;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .badge {
+      background: #493374;
+      color: #ded5fc;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 9px;
+      border-radius: 999px;
+    }
+    .subtitle {
+      color: #9b91ad;
+      font-size: 12px;
+      margin-top: 2px;
+    }
+
+    /* Barra de atajos */
+    .keyboard-guide {
+      display: flex;
+      gap: 8px;
+      background: #181223;
+      border: 1px solid #2e233f;
+      border-radius: 8px;
+      padding: 6px 12px;
+      margin-bottom: 10px;
+      font-size: 11px;
+      color: #c5bcd4;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+    }
+    .key-badge {
+      background: #2a1f3d;
+      border: 1px solid #493669;
+      color: #38f8d4;
+      font-weight: bold;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 10px;
+      box-shadow: 0 1px 0 #150e21;
+    }
+
+    /* Contenedor del Juego */
+    .game-wrapper {
+      position: relative;
+      border: 3px solid #2d213f;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 10px 32px rgba(0, 0, 0, 0.85);
+      background: #201726;
+      width: 640px;
+      height: 380px;
+    }
+    canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+    }
+
+    /* Selector de Categorías de Efectos */
+    .tabs-nav {
+      display: flex;
+      gap: 6px;
+      margin-top: 12px;
+      max-width: 640px;
+      width: 100%;
+      overflow-x: auto;
+    }
+    .tab-btn {
+      flex: 1;
+      background: #1a1426;
+      border: 1px solid #322547;
+      color: #a49ab5;
+      padding: 8px 10px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+    }
+    .tab-btn:hover {
+      background: #281f3b;
+      color: #fff;
+    }
+    .tab-btn.active {
+      background: #503584;
+      border-color: #7952c4;
+      color: #ffffff;
+      box-shadow: 0 2px 8px rgba(121, 82, 196, 0.35);
+    }
+
+    /* Panel de Acciones */
+    .controls-panel {
+      margin-top: 8px;
+      max-width: 640px;
+      width: 100%;
+      background: #171122;
+      border: 1px solid #291e3a;
+      border-radius: 10px;
+      padding: 12px;
+    }
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .panel-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #dfd8ec;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .actions-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+    }
+    .fx-btn {
+      background: #231b31;
+      border: 1px solid #3a2b50;
+      color: #ded6ec;
+      padding: 8px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      cursor: pointer;
+      text-align: left;
+      transition: all 0.15s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .fx-btn strong {
+      color: #fff;
+      font-size: 12px;
+    }
+    .fx-btn span {
+      font-size: 10px;
+      color: #9287a5;
+    }
+    .fx-btn:hover {
+      background: #312545;
+      border-color: #5c4380;
+    }
+    .fx-btn.hero-action {
+      background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%);
+      border: none;
+      color: #fff;
+      font-weight: bold;
+      text-align: center;
+      align-items: center;
+      padding: 10px;
+    }
+    .fx-btn.hero-action:hover {
+      background: linear-gradient(135deg, #0ea5e9 0%, #3b82f6 100%);
+    }
+
+    .toggles-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid #261b36;
+      margin-top: 10px;
+      padding-top: 8px;
+      font-size: 11px;
+      color: #958ba8;
+    }
+    .reset-btn {
+      background: #231b31;
+      border: 1px solid #3c2c54;
+      color: #fff;
+      border-radius: 5px;
+      padding: 4px 10px;
+      cursor: pointer;
+      font-size: 11px;
+    }
+    .reset-btn:hover {
+      background: #35264c;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Game Feel FX Studio <span class="badge">6 Packs Completos</span></h1>
+    <div class="subtitle">Desarrollado con las especificaciones exactas de <strong>@game_feel_prompts</strong></div>
+  </header>
+
+  <div class="keyboard-guide">
+    <span><span class="key-badge">←</span> <span class="key-badge">→</span> / <span class="key-badge">A</span> <span class="key-badge">D</span> Mover</span>
+    <span><span class="key-badge">↑</span> / <span class="key-badge">W</span> Saltar</span>
+    <span><span class="key-badge">Z</span> / <span class="key-badge">X</span> / <span class="key-badge">Espacio</span> Atacar</span>
+    <span><span class="key-badge">E</span> Abrir Cofre</span>
+    <span><span class="key-badge">V</span> Victoria</span>
+    <span><span class="key-badge">1 - 6</span> Disparar Efectos</span>
+  </div>
+
+  <div class="game-wrapper">
+    <canvas id="gameCanvas" width="320" height="190"></canvas>
+  </div>
+
+  <!-- Pestañas de categorías -->
+  <div class="tabs-nav">
+    <button class="tab-btn active" onclick="switchCategory('combat')">⚔️ Hit & Damage</button>
+    <button class="tab-btn" onclick="switchCategory('jump')">🦘 Jump & Land</button>
+    <button class="tab-btn" onclick="switchCategory('chest')">📦 Chest Open</button>
+    <button class="tab-btn" onclick="switchCategory('coin')">🪙 Coin Pickup</button>
+    <button class="tab-btn" onclick="switchCategory('victory')">🏆 Victory Flip</button>
+  </div>
+
+  <!-- Panel Dinámico según la categoría -->
+  <div class="controls-panel" id="panelContainer">
+    <!-- Se llena dinámicamente con JS -->
+  </div>
+
+  <script>
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    ctx.imageSmoothingEnabled = false;
+
+    // Dimensiones lógicas (Pixel Art retro)
+    const WIDTH = 320;
+    const HEIGHT = 190;
+    const FLOOR_Y = 145;
+    const GRAVITY = 0.44;
+
+    // Estado del Teclado
+    const keys = { left: false, right: false, up: false, attack: false };
+
+    // Categoría activa en UI
+    let activeCategory = 'combat';
+
+    // Global Screen Shake & Camera Dip
+    let screenShake = 0;
+    let cameraDip = 0;
+    let hitStopFrames = 0;
+
+    // Colecciones de entidades del mundo
+    const particles = [];
+    const damageNumbers = [];
+    const floatingTexts = [];
+    const coins = [];
+    const ghostTrails = [];
+    const shockRings = [];
+    const sparkles = [];
+    const fireworks = [];
+
+    // HUD: Corazones y Monedas
+    let hearts = [
+      { id: 1, broken: false, breakAnim: null },
+      { id: 2, broken: false, breakAnim: null },
+      { id: 3, broken: false, breakAnim: null }
+    ];
+    let hudCoins = 14;
+    let hudCoinBumpTimer = 0;
+
+    // Viñeta roja de Taking Damage
+    let vignetteTimer = 0;
+    const vignetteDuration = 0.5;
+
+    // ESTADO DEL HÉROE
+    const hero = {
+      x: 65,
+      y: FLOOR_Y,
+      vx: 0,
+      vy: 0,
+      width: 18,
+      height: 22,
+      facing: 1,
+      isGrounded: true,
+      walkAnimTimer: 0,
+
+      // Jump & Land Pack
+      isCrouchingAnticipation: false,
+      anticipationTimer: 0,
+      squashX: 1,
+      squashY: 1,
+      ghostTrailTimer: 0,
+
+      // Ataque
+      isAttacking: false,
+      attackTimer: 0,
+      attackDuration: 0.22,
+      hasHitSlimeInSwing: false,
+
+      // Taking Damage Pack
+      isKnocked: false,
+      knockProgress: 0,
+      knockStartX: 65,
+      knockDir: -1,
+      knockDist: 56,
+      knockHeight: 20,
+      iFrameTimer: 0,
+      iFrameDuration: 0.6,
+      redTintTimer: 0,
+      redTintDuration: 0.3,
+      colorSplitTimer: 0,
+      colorSplitDuration: 0.25,
+      splitOffset: 0,
+      shakeOffset: { x: 0, y: 0 },
+
+      // Victory Pack
+      isVictoryFlipping: false,
+      victoryFlipProgress: 0,
+      victoryRotation: 0,
+      victoryRaysTimer: 0
+    };
+
+    // ESTADO DEL SLIME (ENEMIGO)
+    const slime = {
+      x: 185,
+      y: FLOOR_Y,
+      vx: 0,
+      vy: 0,
+      width: 26,
+      height: 20,
+      facing: -1,
+      hp: 3,
+      maxHp: 3,
+      isAlive: true,
+      respawnTimer: 0,
+      squashX: 1,
+      squashY: 1,
+      bounceTimer: 0,
+      aiTimer: 0,
+      whiteFlashFrames: 0
+    };
+
+    // ESTADO DEL COFRE (CHEST OPEN PACK)
+    const chest = {
+      x: 260,
+      y: FLOOR_Y,
+      width: 28,
+      height: 20,
+      isOpen: false,
+      isOpening: false,
+      rattleTimer: 0,
+      rattleAngle: 0,
+      lidAngle: 0, // 0 a 118 grados
+      squashX: 1,
+      squashY: 1,
+      lightRaysTimer: 0,
+      gem: null
+    };
+
+    // ESTADO DE VICTORIA (VICTORY PACK)
+    const victory = {
+      active: false,
+      timer: 0,
+      bannerScale: 2.4,
+      bannerAlpha: 0,
+      stars: [
+        { slotX: 110, y: 65, active: false, timer: 0.2 },
+        { slotX: 160, y: 60, active: false, timer: 0.32 },
+        { slotX: 210, y: 65, active: false, timer: 0.44 }
+      ],
+      confettiSpawned: false
+    };
+
+    // SPAWNEAR MONEDA INICIAL
+    spawnCoin(135, FLOOR_Y - 12);
+
+    // ==========================================
+    // FUNCIONES DE CONTROL DE COMBATE & DAÑO
+    // ==========================================
+    function heroAttack() {
+      if (hero.isAttacking || hero.isKnocked || hero.isVictoryFlipping) return;
+      hero.isAttacking = true;
+      hero.attackTimer = hero.attackDuration;
+      hero.hasHitSlimeInSwing = false;
+      hero.vx = hero.facing * 2.0; // Sword lunge
+    }
+
+    // HIT FEEDBACK (CUANDO EL HÉROE GOLPEA AL SLIME)
+    function onSlimeHitByHero() {
+      slime.hp--;
+
+      // 1. Screen Shake: 10px for 0.25s with fast decay
+      screenShake = 10;
+
+      // 2. Hit Stop: Freeze both fighters for 0.12s on contact
+      hitStopFrames = Math.round(0.12 * 60);
+
+      // 3. White Flash: Fill enemy sprite pure white for 3 frames
+      slime.whiteFlashFrames = 3;
+
+      // 4. Damage Numbers: Pop pixel damage number over enemy
+      const dmg = Math.floor(22 + Math.random() * 12);
+      damageNumbers.push({
+        x: slime.x + slime.width / 2 + (Math.random() - 0.5) * 8,
+        y: slime.y - slime.height - 4,
+        vy: -1.8,
+        text: dmg.toString(),
+        alpha: 1,
+        life: 0.7
+      });
+
+      // 5. Spark Burst: 12 hot pixel sparks from contact point with gravity
+      const sparkX = hero.facing === 1 ? slime.x : slime.x + slime.width;
+      const sparkY = slime.y - slime.height / 2;
+      for (let i = 0; i < 12; i++) {
+        const angle = (Math.PI * 2 * Math.random());
+        const speed = 1.5 + Math.random() * 3.5;
+        particles.push({
+          x: sparkX,
+          y: sparkY,
+          vx: Math.cos(angle) * speed,
+          vy: Math.sin(angle) * speed - 1.2,
+          color: Math.random() > 0.4 ? '#ffffff' : '#fed67e',
+          size: 2,
+          gravity: 0.35,
+          life: 0.35 + Math.random() * 0.25
+        });
+      }
+
+      // 6. Squash & Stretch: Squash enemy 138% wide, 62% tall, then spring back
+      slime.squashX = 1.38;
+      slime.squashY = 0.62;
+
+      // Knockback al slime
+      slime.vx = hero.facing * 120;
+      slime.vy = -3.2;
+
+      // Si muere el slime
+      if (slime.hp <= 0) {
+        slime.isAlive = false;
+        slime.respawnTimer = 2.0;
+        // Soltar monedas al morir
+        spawnCoin(slime.x + 8, FLOOR_Y - 10, -1.5, -3.5);
+        spawnCoin(slime.x + 18, FLOOR_Y - 10, 1.5, -3.5);
+      }
+    }
+
+    // TAKING DAMAGE (CUANDO EL SLIME GOLPEA AL HÉROE)
+    function onHeroTakeDamage() {
+      if (hero.iFrameTimer > 0 || hero.isKnocked) return;
+
+      // 1. Knockback: push back 56px on 20px arc
+      hero.isKnocked = true;
+      hero.knockProgress = 0;
+      hero.knockStartX = hero.x;
+      hero.knockDir = slime.x > hero.x ? -1 : 1;
+
+      // 2. Blink I-Frames: every 2 frames for 0.6s
+      hero.iFrameTimer = hero.iFrameDuration;
+
+      // 3. Red Vignette: flash 4 red bands around screen, fade over 0.5s
+      vignetteTimer = vignetteDuration;
+
+      // 4. Heart Break: shake last heart, crack in 2 halves falling
+      breakNextHeart();
+
+      // 5. Red Tint: fill hero red at 90%, flicker, fade 0.3s
+      hero.redTintTimer = hero.redTintDuration;
+
+      // 6. Color Split: split red & cyan 14px apart + 4px shake
+      hero.colorSplitTimer = hero.colorSplitDuration;
+      screenShake = 6;
+      hitStopFrames = 3;
+    }
+
+    function breakNextHeart() {
+      for (let i = hearts.length - 1; i >= 0; i--) {
+        if (!hearts[i].broken) {
+          hearts[i].broken = true;
+          hearts[i].breakAnim = {
+            shakeTimer: 0.15,
+            left: { x: 0, y: 0, vx: -1.3, vy: -2.6, rot: 0, vrot: -0.1, alpha: 1 },
+            right: { x: 0, y: 0, vx: 1.3, vy: -2.6, rot: 0, vrot: 0.1, alpha: 1 }
+          };
+          break;
+        }
+      }
+    }
+
+    // ==========================================
+    // JUMP & LAND PACK
+    // ==========================================
+    function triggerHeroJump() {
+      if (!hero.isGrounded || hero.isKnocked || hero.isCrouchingAnticipation) return;
+
+      // 6. Anticipation: Crouch 24% for 0.18s before takeoff
+      hero.isCrouchingAnticipation = true;
+      hero.anticipationTimer = 0.18;
+      hero.squashY = 0.76; // crouch 24%
+      hero.squashX = 1.15;
+    }
+
+    function executeJumpLaunch() {
+      hero.isCrouchingAnticipation = false;
+      hero.isGrounded = false;
+      hero.vy = -7.4;
+      // 2. Squash & Stretch: stretch 122% tall in air
+      hero.squashY = 1.22;
+      hero.squashX = 0.88;
+    }
+
+    function onHeroLand() {
+      hero.isGrounded = true;
+      hero.vy = 0;
+      hero.y = FLOOR_Y;
+
+      // 1. Dust Puff: 3 pixel dust clouds out each side, fade in 0.4s
+      for (let side = -1; side <= 1; side += 2) {
+        for (let d = 0; d < 3; d++) {
+          particles.push({
+            x: hero.x + hero.width / 2 + side * 4,
+            y: FLOOR_Y - 2,
+            vx: side * (1.2 + d * 0.9),
+            vy: -0.4 - Math.random() * 0.5,
+            color: '#7a6884',
+            size: 3 - d * 0.5,
+            gravity: 0,
+            life: 0.4
+          });
+        }
+      }
+
+      // 2. Squash on landing: 130% wide, spring back
+      hero.squashX = 1.30;
+      hero.squashY = 0.75;
+
+      // 3. Camera Dip: dip camera 12px, spring back within 0.3s
+      cameraDip = 12;
+
+      // 4. Shock Ring: flat gold pixel ring along ground from feet, 0.4s
+      shockRings.push({
+        x: hero.x + hero.width / 2,
+        y: FLOOR_Y,
+        radius: 4,
+        maxRadius: 26,
+        life: 0.4,
+        maxLife: 0.4
+      });
+    }
+
+    // ==========================================
+    // CHEST OPEN PACK
+    // ==========================================
+    function triggerOpenChest() {
+      if (chest.isOpen || chest.isOpening) return;
+      chest.isOpening = true;
+
+      // 5. Rattle Tease: rattle chest ±6° for 0.25s before it opens, burst stars
+      chest.rattleTimer = 0.25;
+
+      setTimeout(() => {
+        executeChestBurst();
+      }, 250);
+    }
+
+    function executeChestBurst() {
+      chest.isOpen = true;
+      chest.isOpening = false;
+
+      // 3. Lid Bounce: spring lid to 118° with overshoot; squash chest 122% wide
+      chest.lidAngle = 118;
+      chest.squashX = 1.22;
+      chest.squashY = 0.82;
+
+      // 1. Light Rays: spin 10 gold rays out from chest, 170px long, 0.6s
+      chest.lightRaysTimer = 0.6;
+
+      // 4. Coin Fountain: spray 14 coins up from chest with gravity, bounce once
+      for (let i = 0; i < 14; i++) {
+        const spreadVx = (Math.random() - 0.5) * 5;
+        const jumpVy = -3.5 - Math.random() * 3.5;
+        spawnCoin(chest.x + chest.width / 2, chest.y - 12, spreadVx, jumpVy);
+      }
+
+      // 2. Item Pop & 6. Rarity Glow (Gem Pop)
+      chest.gem = {
+        x: chest.x + chest.width / 2,
+        y: chest.y - 10,
+        vx: -0.5,
+        vy: -5.2, // 64px arc
+        rot: 0,
+        bounces: 0,
+        life: 2.5,
+        rarity: 'purple' // Epic / Legendary Glow
+      };
+    }
+
+    // ==========================================
+    // COIN PICKUP PACK
+    // ==========================================
+    function spawnCoin(x, y, vx = 0, vy = 0) {
+      coins.push({
+        x: x,
+        y: y,
+        vx: vx,
+        vy: vy,
+        width: 10,
+        height: 10,
+        spinFrame: 0,
+        bounces: 0,
+        isCollected: false,
+        isFlyingToHUD: false,
+        flyTimer: 0,
+        flyStartX: 0,
+        flyStartY: 0,
+        squashX: 1,
+        squashY: 1
+      });
+    }
+
+    function collectCoin(c) {
+      if (c.isCollected) return;
+      c.isCollected = true;
+
+      // 1. Sparkle Pop: swap coin for 4-point pixel sparkle that grows then fades
+      sparkles.push({
+        x: c.x + 5,
+        y: c.y + 5,
+        size: 2,
+        maxSize: 8,
+        life: 0.35,
+        maxLife: 0.35
+      });
+
+      // 3. Floating +1: pop pixel '+1' at coin, rises 36px and fades in 0.6s
+      floatingTexts.push({
+        x: c.x,
+        y: c.y,
+        vy: -1.0,
+        text: '+1',
+        color: '#facc15',
+        life: 0.6,
+        maxLife: 0.6
+      });
+
+      // 4. Ring Burst: flash coin white, burst gold ring to 78px
+      shockRings.push({
+        x: c.x + 5,
+        y: c.y + 5,
+        radius: 2,
+        maxRadius: 39, // 78px diameter
+        life: 0.4,
+        maxLife: 0.4,
+        isCircle: true
+      });
+
+      // 2. Fly to HUD: coin arcs to HUD counter in 0.35s
+      c.isFlyingToHUD = true;
+      c.flyStartX = c.x;
+      c.flyStartY = c.y;
+      c.flyTimer = 0.35;
+    }
+
+    // ==========================================
+    // VICTORY PACK
+    // ==========================================
+    function triggerVictory() {
+      if (victory.active) return;
+      victory.active = true;
+      victory.timer = 0;
+      victory.bannerAlpha = 0;
+      victory.bannerScale = 2.4;
+      victory.confettiSpawned = false;
+
+      // 1. Victory Flip: hero leaps 56px, does full 360° flip, lands with squash
+      hero.isVictoryFlipping = true;
+      hero.victoryFlipProgress = 0;
+      hero.vy = -6.5;
+      hero.isGrounded = false;
+
+      // 3. Win Banner: slam "YOU WIN!" from 240% to 100% in 0.1s; shake view 6px
+      screenShake = 6;
+
+      // 6. Light Rays: spin 10 gold rays behind hero
+      hero.victoryRaysTimer = 3.0;
+
+      // 2. Confetti Pop: 2 cannons fire 36 confetti bits upward
+      for (let i = 0; i < 36; i++) {
+        const side = i % 2 === 0 ? 1 : -1;
+        particles.push({
+          x: side === 1 ? 30 : WIDTH - 30,
+          y: FLOOR_Y - 5,
+          vx: side * (1.5 + Math.random() * 3.5),
+          vy: -4.5 - Math.random() * 3.5,
+          color: ['#f43f5e', '#38bdf8', '#fbbf24', '#a855f7', '#34d399'][Math.floor(Math.random() * 5)],
+          size: 3,
+          gravity: 0.12,
+          flutter: Math.random() * 5,
+          life: 2.2
+        });
+      }
+
+      // 5. Fireworks: burst 3 pixel fireworks of 12 sparks each, 0.12s apart
+      for (let f = 0; f < 3; f++) {
+        setTimeout(() => {
+          spawnFirework(60 + f * 90, 40 + Math.random() * 20);
+        }, f * 120);
+      }
+    }
+
+    function spawnFirework(fx, fy) {
+      screenShake = 3;
+      for (let i = 0; i < 12; i++) {
+        const angle = (Math.PI * 2 / 12) * i;
+        particles.push({
+          x: fx,
+          y: fy,
+          vx: Math.cos(angle) * (2.2 + Math.random() * 1.5),
+          vy: Math.sin(angle) * (2.2 + Math.random() * 1.5),
+          color: ['#fbbf24', '#f43f5e', '#38f8d4'][Math.floor(Math.random() * 3)],
+          size: 2,
+          gravity: 0.08,
+          life: 0.65
+        });
+      }
+    }
+
+    // ==========================================
+    // ACTUALIZACIÓN DE FÍSICAS (UPDATE)
+    // ==========================================
+    function update(dt) {
+      // Hit Stop (congelamiento global de frames)
+      if (hitStopFrames > 0) {
+        hitStopFrames--;
+        return;
+      }
+
+      // --- 1. HÉROE ---
+      if (hero.isCrouchingAnticipation) {
+        hero.anticipationTimer -= dt;
+        if (hero.anticipationTimer <= 0) {
+          executeJumpLaunch();
+        }
+      } else if (hero.isVictoryFlipping) {
+        hero.vy += GRAVITY;
+        hero.y += hero.vy;
+        hero.victoryRotation += dt * 14; // Giro de 360°
+        if (hero.y >= FLOOR_Y) {
+          hero.y = FLOOR_Y;
+          hero.vy = 0;
+          hero.isGrounded = true;
+          hero.isVictoryFlipping = false;
+          hero.victoryRotation = 0;
+          hero.squashX = 1.35;
+          hero.squashY = 0.70;
+        }
+      } else if (hero.isKnocked) {
+        hero.knockProgress += dt * 2.8;
+        if (hero.knockProgress >= 1) {
+          hero.knockProgress = 1;
+          hero.isKnocked = false;
+        }
+        const t = hero.knockProgress;
+        hero.x = hero.knockStartX + (hero.knockDir * hero.knockDist * t);
+        hero.y = FLOOR_Y - (4 * hero.knockHeight * t * (1 - t));
+      } else {
+        // Movimiento horizontal normal
+        const moveSpeed = 100;
+        if (keys.left && !keys.right) {
+          hero.vx = -moveSpeed;
+          hero.facing = -1;
+          hero.walkAnimTimer += dt * 15;
+        } else if (keys.right && !keys.left) {
+          hero.vx = moveSpeed;
+          hero.facing = 1;
+          hero.walkAnimTimer += dt * 15;
+        } else {
+          hero.vx *= 0.68;
+          if (Math.abs(hero.vx) < 2) hero.vx = 0;
+          hero.walkAnimTimer = 0;
+        }
+
+        // Salto
+        if (keys.up && hero.isGrounded) {
+          triggerHeroJump();
+        }
+
+        // Físicas verticales
+        if (!hero.isGrounded && !hero.isCrouchingAnticipation) {
+          hero.vy += GRAVITY;
+          hero.y += hero.vy;
+
+          // 5. Ghost Trail: leave 4 fading mint afterimages along jump arc
+          hero.ghostTrailTimer += dt;
+          if (hero.ghostTrailTimer >= 0.075) {
+            hero.ghostTrailTimer = 0;
+            ghostTrails.push({
+              x: hero.x,
+              y: hero.y,
+              facing: hero.facing,
+              alpha: 0.65,
+              life: 0.3
+            });
+          }
+
+          if (hero.y >= FLOOR_Y) {
+            onHeroLand();
+          }
+        }
+        hero.x += hero.vx * dt;
+      }
+
+      // Restricción de pantalla del héroe
+      if (hero.x < 10) hero.x = 10;
+      if (hero.x > WIDTH - 26) hero.x = WIDTH - 26;
+
+      // Recuperación elástica de Squash & Stretch
+      hero.squashX += (1 - hero.squashX) * dt * 12;
+      hero.squashY += (1 - hero.squashY) * dt * 12;
+
+      // Timers de Ataque y Hitbox
+      if (hero.isAttacking) {
+        hero.attackTimer -= dt;
+        if (hero.attackTimer <= 0) hero.isAttacking = false;
+
+        // Comprobar si golpea al Slime
+        if (!hero.hasHitSlimeInSwing && slime.isAlive) {
+          const slashX = hero.facing === 1 ? hero.x + 8 : hero.x - 26;
+          const slashW = 32;
+          const slashY = hero.y - hero.height - 4;
+          const slashH = hero.height + 8;
+
+          const hit = (
+            slashX < slime.x + slime.width &&
+            slashX + slashW > slime.x &&
+            slashY < slime.y &&
+            slashY + slashH > slime.y - slime.height
+          );
+          if (hit) {
+            hero.hasHitSlimeInSwing = true;
+            onSlimeHitByHero();
+          }
+        }
+      }
+
+      // Timers de Taking Damage
+      if (hero.iFrameTimer > 0) hero.iFrameTimer -= dt;
+      if (vignetteTimer > 0) vignetteTimer -= dt;
+      if (hero.redTintTimer > 0) hero.redTintTimer -= dt;
+
+      if (hero.colorSplitTimer > 0) {
+        hero.colorSplitTimer -= dt;
+        const progress = hero.colorSplitTimer / hero.colorSplitDuration;
+        hero.splitOffset = 7 * progress;
+        hero.shakeOffset.x = (Math.random() - 0.5) * 4 * progress;
+        hero.shakeOffset.y = (Math.random() - 0.5) * 4 * progress;
+      } else {
+        hero.splitOffset = 0;
+        hero.shakeOffset.x = 0;
+        hero.shakeOffset.y = 0;
+      }
+
+      // --- 2. SLIME ---
+      if (slime.isAlive) {
+        slime.bounceTimer += dt * 5;
+        slime.aiTimer += dt;
+        if (slime.aiTimer > 1.2) {
+          slime.aiTimer = 0;
+          if (Math.abs(slime.x - hero.x) > 28) {
+            slime.facing = hero.x > slime.x ? 1 : -1;
+            slime.vx = slime.facing * (45 + Math.random() * 25);
+            slime.vy = -2.6;
+          }
+        }
+        slime.vy += GRAVITY;
+        slime.x += slime.vx * dt;
+        slime.y += slime.vy;
+        slime.vx *= 0.88;
+        if (slime.y >= FLOOR_Y) {
+          slime.y = FLOOR_Y;
+          slime.vy = 0;
+        }
+
+        // Contacto con el héroe
+        const touchHero = (
+          hero.x < slime.x + slime.width &&
+          hero.x + hero.width > slime.x &&
+          hero.y - hero.height < slime.y &&
+          hero.y > slime.y - slime.height
+        );
+        if (touchHero && hero.iFrameTimer <= 0 && !hero.isKnocked) {
+          onHeroTakeDamage();
+        }
+
+        if (slime.whiteFlashFrames > 0) slime.whiteFlashFrames--;
+        slime.squashX += (1 - slime.squashX) * dt * 10;
+        slime.squashY += (1 - slime.squashY) * dt * 10;
+      } else {
+        slime.respawnTimer -= dt;
+        if (slime.respawnTimer <= 0) {
+          slime.isAlive = true;
+          slime.hp = slime.maxHp;
+          slime.x = 185;
+          slime.y = 40;
+          slime.vy = 0;
+        }
+      }
+
+      // --- 3. COFRE Y GEMA ---
+      if (chest.rattleTimer > 0) {
+        chest.rattleTimer -= dt;
+        chest.rattleAngle = (Math.random() - 0.5) * 12; // ±6°
+      } else {
+        chest.rattleAngle = 0;
+      }
+      if (chest.lightRaysTimer > 0) chest.lightRaysTimer -= dt;
+      chest.squashX += (1 - chest.squashX) * dt * 10;
+      chest.squashY += (1 - chest.squashY) * dt * 10;
+
+      // Gema expulsada del cofre
+      if (chest.gem) {
+        const g = chest.gem;
+        g.vy += GRAVITY * 0.7;
+        g.x += g.vx;
+        g.y += g.vy;
+        g.rot += dt * 4;
+        if (g.y >= FLOOR_Y - 4) {
+          g.y = FLOOR_Y - 4;
+          if (g.bounces === 0) {
+            g.vy = -2.2; // rebote
+            g.bounces++;
+          } else {
+            g.vy = 0;
+            g.vx = 0;
+          }
+        }
+        g.life -= dt;
+        if (g.life <= 0) chest.gem = null;
+      }
+
+      // --- 4. MONEDAS (COIN PICKUP) ---
+      for (let i = coins.length - 1; i >= 0; i--) {
+        const c = coins[i];
+        if (c.isFlyingToHUD) {
+          c.flyTimer -= dt;
+          const prog = 1 - Math.max(0, c.flyTimer / 0.35); // 0 a 1
+          // Arco parabólico hacia el HUD en (28, 38)
+          const targetX = 26;
+          const targetY = 36;
+          c.x = c.flyStartX + (targetX - c.flyStartX) * prog;
+          c.y = c.flyStartY + (targetY - c.flyStartY) * prog - Math.sin(prog * Math.PI) * 28;
+          if (c.flyTimer <= 0) {
+            hudCoins++;
+            hudCoinBumpTimer = 0.2; // counter bump
+            coins.splice(i, 1);
+            continue;
+          }
+        } else {
+          // Físicas normales en el suelo
+          c.vy += GRAVITY;
+          c.x += c.vx * dt;
+          c.y += c.vy;
+          c.vx *= 0.94;
+          if (c.y >= FLOOR_Y - 8) {
+            c.y = FLOOR_Y - 8;
+            if (c.bounces < 1 && Math.abs(c.vy) > 1) {
+              c.vy = -c.vy * 0.45;
+              c.bounces++;
+            } else {
+              c.vy = 0;
+            }
+          }
+
+          // 5. Magnet Pull: near the hero, coin is pulled in speeding up
+          const distToHero = Math.hypot((hero.x + 9) - (c.x + 5), (hero.y - 10) - (c.y + 5));
+          if (distToHero < 42) {
+            const pullAngle = Math.atan2((hero.y - 10) - (c.y + 5), (hero.x + 9) - (c.x + 5));
+            c.vx += Math.cos(pullAngle) * 280 * dt;
+            c.vy += Math.sin(pullAngle) * 280 * dt;
+            c.squashX = 1.35; // stretching
+          }
+
+          // Recolección por toque
+          if (distToHero < 15) {
+            collectCoin(c);
+          }
+        }
+      }
+
+      // --- 5. VICTORIA (BANNER & ESTRELLAS) ---
+      if (victory.active) {
+        victory.timer += dt;
+        if (victory.bannerScale > 1.0) {
+          victory.bannerScale = Math.max(1.0, victory.bannerScale - dt * 14);
+          victory.bannerAlpha = Math.min(1.0, victory.bannerAlpha + dt * 10);
+        }
+        // 4. Star Rating: 3 stars pop 0.12s apart with ring
+        victory.stars.forEach(s => {
+          if (!s.active && victory.timer >= s.timer) {
+            s.active = true;
+            shockRings.push({
+              x: s.slotX + 8,
+              y: s.y + 8,
+              radius: 2,
+              maxRadius: 18,
+              life: 0.35,
+              maxLife: 0.35,
+              isCircle: true
+            });
+          }
+        });
+      }
+
+      // --- 6. PARTICULAS, RINGS, DAMAGE NUMBERS, DECAY ---
+      if (screenShake > 0) screenShake = Math.max(0, screenShake - dt * 26);
+      if (cameraDip > 0) cameraDip = Math.max(0, cameraDip - dt * 38);
+      if (hudCoinBumpTimer > 0) hudCoinBumpTimer -= dt;
+      if (hero.victoryRaysTimer > 0) hero.victoryRaysTimer -= dt;
+
+      // Damage Numbers
+      for (let i = damageNumbers.length - 1; i >= 0; i--) {
+        const d = damageNumbers[i];
+        d.life -= dt;
+        d.y += d.vy;
+        d.alpha = d.life / 0.7;
+        if (d.life <= 0) damageNumbers.splice(i, 1);
+      }
+
+      // Floating +1
+      for (let i = floatingTexts.length - 1; i >= 0; i--) {
+        const f = floatingTexts[i];
+        f.life -= dt;
+        f.y += f.vy;
+        f.alpha = f.life / f.maxLife;
+        if (f.life <= 0) floatingTexts.splice(i, 1);
+      }
+
+      // Shock rings
+      for (let i = shockRings.length - 1; i >= 0; i--) {
+        const r = shockRings[i];
+        r.life -= dt;
+        const prog = 1 - (r.life / r.maxLife);
+        r.radius = r.maxRadius * prog;
+        if (r.life <= 0) shockRings.splice(i, 1);
+      }
+
+      // Sparkles
+      for (let i = sparkles.length - 1; i >= 0; i--) {
+        const sp = sparkles[i];
+        sp.life -= dt;
+        if (sp.life <= 0) sparkles.splice(i, 1);
+      }
+
+      // Ghost trails
+      for (let i = ghostTrails.length - 1; i >= 0; i--) {
+        const g = ghostTrails[i];
+        g.life -= dt;
+        g.alpha = (g.life / 0.3) * 0.65;
+        if (g.life <= 0) ghostTrails.splice(i, 1);
+      }
+
+      // Partículas con gravedad
+      for (let i = particles.length - 1; i >= 0; i--) {
+        const p = particles[i];
+        p.life -= dt;
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vy += p.gravity || 0;
+        if (p.flutter) p.x += Math.sin(p.life * 10) * 0.5;
+        if (p.life <= 0) particles.splice(i, 1);
+      }
+
+      // Hearts animation
+      hearts.forEach(h => {
+        if (h.breakAnim) {
+          const a = h.breakAnim;
+          if (a.shakeTimer > 0) {
+            a.shakeTimer -= dt;
+          } else {
+            a.left.x += a.left.vx; a.left.y += a.left.vy; a.left.vy += 0.22; a.left.rot += a.left.vrot; a.left.alpha -= dt * 1.5;
+            a.right.x += a.right.vx; a.right.y += a.right.vy; a.right.vy += 0.22; a.right.rot += a.right.vrot; a.right.alpha -= dt * 1.5;
+          }
+        }
+      });
+    }
+
+    // ==========================================
+    // RENDERIZADO VISUAL
+    // ==========================================
+    function render() {
+      ctx.save();
+
+      // Screen Shake & Camera Dip
+      let sx = 0, sy = cameraDip;
+      if (screenShake > 0) {
+        sx = (Math.random() - 0.5) * screenShake;
+        sy += (Math.random() - 0.5) * screenShake;
+      }
+      ctx.translate(Math.round(sx), Math.round(sy));
+
+      // Fondo
+      ctx.fillStyle = '#1c1524';
+      ctx.fillRect(-20, -20, WIDTH + 40, HEIGHT + 40);
+
+      // Estrellas
+      ctx.fillStyle = '#372942';
+      ctx.fillRect(25, 35, 2, 2); ctx.fillRect(80, 20, 2, 2);
+      ctx.fillRect(150, 45, 2, 2); ctx.fillRect(225, 25, 2, 2); ctx.fillRect(295, 40, 2, 2);
+
+      // Suelo
+      ctx.fillStyle = '#261b2c';
+      ctx.fillRect(0, FLOOR_Y, WIDTH, HEIGHT - FLOOR_Y);
+      ctx.fillStyle = '#3a2b41';
+      ctx.fillRect(0, FLOOR_Y, WIDTH, 2);
+      for (let i = 0; i < WIDTH; i += 16) {
+        ctx.fillStyle = '#201625';
+        ctx.fillRect(i, FLOOR_Y + 5, 12, 3);
+      }
+
+      // Anillos de impacto en el suelo (Shock Rings)
+      renderShockRings();
+
+      // Ghost Trails del Héroe
+      renderGhostTrails();
+
+      // Cofre
+      renderChest();
+
+      // Monedas
+      renderCoins();
+
+      // Slime
+      renderSlime();
+
+      // Rayos de luz de Victoria o Cofre
+      if (hero.victoryRaysTimer > 0) renderLightRays(hero.x + hero.width / 2, hero.y - hero.height / 2);
+      if (chest.lightRaysTimer > 0) renderLightRays(chest.x + chest.width / 2, chest.y - 10, '#fbbf24');
+
+      // Héroe
+      renderHero();
+
+      // Partículas y Sparkles
+      renderParticles();
+      renderSparkles();
+
+      // Textos flotantes y números de daño
+      renderDamageAndTexts();
+
+      // HUD
+      renderHUD();
+
+      // Viñeta roja de Taking Damage
+      renderVignette();
+
+      // Banner y Estrellas de Victoria
+      if (victory.active) renderVictoryUI();
+
+      ctx.restore();
+    }
+
+    // DIBUJAR AL HÉROE
+    function renderHero() {
+      const isBlinking = hero.iFrameTimer > 0 && (Math.floor(performance.now() / 32) % 2 === 0);
+      if (isBlinking) return;
+
+      const hx = Math.round(hero.x);
+      const hy = Math.round(hero.y);
+
+      ctx.save();
+      ctx.translate(hx + hero.width / 2, hy);
+      if (hero.isVictoryFlipping) ctx.rotate(hero.victoryRotation);
+      ctx.scale(hero.facing * hero.squashX, hero.squashY);
+
+      const ox = -hero.width / 2;
+      const oy = -hero.height;
+
+      // Color Split
+      if (hero.colorSplitTimer > 0) {
+        drawHeroBody(ox - hero.splitOffset, oy, 'magenta', 0.85);
+        drawHeroBody(ox + hero.splitOffset, oy, 'cyan', 0.85);
+        drawHeroBody(ox, oy, 'normal', 0.7);
+      } else if (hero.redTintTimer > 0) {
+        drawHeroBody(ox, oy, 'normal', 1);
+        drawHeroBody(ox, oy, 'red', (hero.redTintTimer / hero.redTintDuration) * 0.9);
+      } else {
+        drawHeroBody(ox, oy, 'normal', 1);
+      }
+
+      ctx.restore();
+
+      // Tajo de espada
+      if (hero.isAttacking) renderSwordSlash();
+    }
+
+    function drawHeroBody(ox, oy, colorMode, alpha) {
+      ctx.save();
+      ctx.globalAlpha = alpha;
+
+      if (colorMode === 'red') {
+        ctx.fillStyle = '#ff2030';
+        ctx.fillRect(ox, oy + 2, 16, 20);
+      } else if (colorMode === 'cyan') {
+        ctx.fillStyle = '#00f7ff';
+        ctx.fillRect(ox, oy + 2, 16, 20);
+      } else if (colorMode === 'magenta') {
+        ctx.fillStyle = '#ff0055';
+        ctx.fillRect(ox, oy + 2, 16, 20);
+      } else {
+        // Pelo Celeste Menta
+        ctx.fillStyle = '#65d6c8';
+        ctx.fillRect(ox + 3, oy, 10, 4);
+        ctx.fillRect(ox + 1, oy + 3, 14, 5);
+        ctx.fillRect(ox + 1, oy + 8, 4, 3);
+
+        // Cara
+        ctx.fillStyle = '#ffd1b3';
+        ctx.fillRect(ox + 5, oy + 7, 10, 6);
+
+        // Ojos
+        ctx.fillStyle = '#231b28';
+        ctx.fillRect(ox + 8, oy + 9, 2, 2);
+        ctx.fillRect(ox + 13, oy + 9, 2, 2);
+
+        // Camisa Roja
+        ctx.fillStyle = '#e85338';
+        ctx.fillRect(ox + 3, oy + 13, 11, 6);
+
+        // Brazos / Espada
+        if (hero.isAttacking) {
+          ctx.fillStyle = '#ffd1b3';
+          ctx.fillRect(ox + 14, oy + 13, 4, 3);
+          ctx.fillStyle = '#ffffff';
+          ctx.fillRect(ox + 18, oy + 7, 2, 10);
+        } else {
+          ctx.fillStyle = '#ffd1b3';
+          ctx.fillRect(ox + 2, oy + 17, 2, 2);
+          ctx.fillRect(ox + 12, oy + 16, 2, 2);
+        }
+
+        // Piernas
+        const leg = Math.round(Math.sin(hero.walkAnimTimer) * 2);
+        ctx.fillStyle = '#3c242e';
+        ctx.fillRect(ox + 4 + leg, oy + 19, 3, 3);
+        ctx.fillRect(ox + 9 - leg, oy + 19, 3, 3);
+      }
+      ctx.restore();
+    }
+
+    function renderSwordSlash() {
+      const prog = 1 - (hero.attackTimer / hero.attackDuration);
+      const sx = hero.facing === 1 ? hero.x + 16 : hero.x - 16;
+      ctx.save();
+      ctx.translate(sx, hero.y - 12);
+      if (hero.facing === -1) ctx.scale(-1, 1);
+      ctx.fillStyle = '#38f8d4';
+      ctx.fillRect(2, -14 + prog * 6, 8, 4);
+      ctx.fillRect(8, -8 + prog * 8, 8, 5);
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(4, -12 + prog * 6, 4, 2);
+      ctx.fillRect(9, -6 + prog * 8, 5, 3);
+      ctx.restore();
+    }
+
+    // DIBUJAR AL SLIME
+    function renderSlime() {
+      if (!slime.isAlive) return;
+      const sx = Math.round(slime.x);
+      const sy = Math.round(slime.y);
+
+      ctx.save();
+      ctx.translate(sx + slime.width / 2, sy);
+      ctx.scale(slime.squashX, slime.squashY);
+
+      // Sombra
+      ctx.fillStyle = 'rgba(0,0,0,0.35)';
+      ctx.beginPath();
+      ctx.ellipse(0, 0, slime.width * 0.45, 3, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      const ox = -slime.width / 2;
+      const oy = -slime.height;
+
+      // Blanco puro si está en White Flash (3 frames)
+      if (slime.whiteFlashFrames > 0) {
+        ctx.fillStyle = '#ffffff';
+      } else {
+        ctx.fillStyle = '#f89338';
+      }
+      ctx.beginPath();
+      ctx.roundRect(ox, oy, slime.width, slime.height, [8, 8, 3, 3]);
+      ctx.fill();
+
+      // Brillo y Ojos
+      if (slime.whiteFlashFrames <= 0) {
+        ctx.fillStyle = '#fed67e';
+        ctx.fillRect(ox + 4, oy + 2, 6, 3);
+        ctx.fillStyle = '#2a1a1f';
+        ctx.fillRect(ox + 4, oy + 7, 3, 4);
+        ctx.fillRect(ox + 14, oy + 7, 3, 4);
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(ox + 4, oy + 7, 1, 2);
+        ctx.fillRect(ox + 14, oy + 7, 1, 2);
+      }
+
+      ctx.restore();
+    }
+
+    // DIBUJAR COFRE Y GEMA
+    function renderChest() {
+      const cx = Math.round(chest.x);
+      const cy = Math.round(chest.y);
+
+      ctx.save();
+      ctx.translate(cx + chest.width / 2, cy);
+      ctx.rotate((chest.rattleAngle * Math.PI) / 180);
+      ctx.scale(chest.squashX, chest.squashY);
+
+      const ox = -chest.width / 2;
+      const oy = -chest.height;
+
+      // Base del cofre de madera
+      ctx.fillStyle = '#92400e';
+      ctx.fillRect(ox, oy + 7, chest.width, 13);
+      ctx.fillStyle = '#f59e0b';
+      ctx.fillRect(ox + 2, oy + 7, 3, 13);
+      ctx.fillRect(ox + chest.width - 5, oy + 7, 3, 13);
+      ctx.fillRect(ox + 11, oy + 9, 6, 6); // cerradura
+
+      // Tapa del cofre
+      ctx.save();
+      if (chest.isOpen) {
+        ctx.translate(ox, oy + 7);
+        ctx.rotate((-chest.lidAngle * Math.PI) / 180);
+        ctx.fillStyle = '#b45309';
+        ctx.fillRect(0, -7, chest.width, 7);
+      } else {
+        ctx.fillStyle = '#b45309';
+        ctx.beginPath();
+        ctx.roundRect(ox, oy, chest.width, 7, [4, 4, 0, 0]);
+        ctx.fill();
+        ctx.fillStyle = '#f59e0b';
+        ctx.fillRect(ox + 2, oy, 3, 7);
+        ctx.fillRect(ox + chest.width - 5, oy, 3, 7);
+      }
+      ctx.restore();
+
+      ctx.restore();
+
+      // Gema brillante
+      if (chest.gem) {
+        const g = chest.gem;
+        ctx.save();
+        ctx.translate(g.x, g.y);
+        ctx.rotate(g.rot);
+        // Resplandor de rareza
+        ctx.fillStyle = 'rgba(192, 38, 211, 0.4)';
+        ctx.beginPath();
+        ctx.arc(0, 0, 9, 0, Math.PI * 2);
+        ctx.fill();
+        // Diamante
+        ctx.fillStyle = '#c084fc';
+        ctx.beginPath();
+        ctx.moveTo(0, -6);
+        ctx.lineTo(5, 0);
+        ctx.lineTo(0, 6);
+        ctx.lineTo(-5, 0);
+        ctx.closePath();
+        ctx.fill();
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(-1, -2, 2, 2);
+        ctx.restore();
+      }
+    }
+
+    // DIBUJAR MONEDAS
+    function renderCoins() {
+      coins.forEach(c => {
+        ctx.save();
+        ctx.translate(c.x + 5, c.y + 5);
+        ctx.scale(c.squashX, c.squashY);
+
+        ctx.fillStyle = '#eab308';
+        ctx.beginPath();
+        ctx.ellipse(0, 0, 4, 5, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = '#fef08a';
+        ctx.fillRect(-1, -2, 2, 4);
+
+        ctx.restore();
+      });
+    }
+
+    // DIBUJAR RAYOS DE LUZ GIRATORIOS (LIGHT RAYS)
+    function renderLightRays(cx, cy, color = '#fde047') {
+      ctx.save();
+      ctx.translate(cx, cy);
+      const time = performance.now() * 0.002;
+      ctx.rotate(time);
+      ctx.fillStyle = color;
+      ctx.globalAlpha = 0.22;
+      for (let i = 0; i < 10; i++) {
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.arc(0, 0, 170, (i * Math.PI * 2) / 10, (i * Math.PI * 2) / 10 + 0.18);
+        ctx.closePath();
+        ctx.fill();
+      }
+      ctx.restore();
+    }
+
+    // DIBUJAR SHOCK RINGS
+    function renderShockRings() {
+      shockRings.forEach(r => {
+        ctx.save();
+        const alpha = (r.life / r.maxLife);
+        ctx.strokeStyle = `rgba(250, 204, 21, ${alpha})`;
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        if (r.isCircle) {
+          ctx.arc(r.x, r.y, r.radius, 0, Math.PI * 2);
+        } else {
+          // Flat gold pixel ring along the ground
+          ctx.ellipse(r.x, r.y, r.radius, r.radius * 0.25, 0, 0, Math.PI * 2);
+        }
+        ctx.stroke();
+        ctx.restore();
+      });
+    }
+
+    // DIBUJAR GHOST TRAILS
+    function renderGhostTrails() {
+      ghostTrails.forEach(g => {
+        ctx.save();
+        ctx.globalAlpha = Math.max(0, g.alpha);
+        ctx.fillStyle = '#65d6c8'; // mint
+        ctx.fillRect(g.x, g.y - hero.height, hero.width, hero.height);
+        ctx.restore();
+      });
+    }
+
+    // DIBUJAR SPARKLES
+    function renderSparkles() {
+      sparkles.forEach(sp => {
+        const prog = 1 - (sp.life / sp.maxLife);
+        const s = (1 - Math.abs(prog - 0.5) * 2) * sp.maxSize;
+        ctx.save();
+        ctx.translate(sp.x, sp.y);
+        ctx.fillStyle = '#ffffff';
+        // 4-point pixel sparkle
+        ctx.fillRect(-s, -1, s * 2, 2);
+        ctx.fillRect(-1, -s, 2, s * 2);
+        ctx.restore();
+      });
+    }
+
+    // DIBUJAR TEXTOS DE DAÑO Y +1
+    function renderDamageAndTexts() {
+      // Floating damage numbers (pop over enemy)
+      damageNumbers.forEach(d => {
+        ctx.save();
+        ctx.globalAlpha = d.alpha;
+        ctx.fillStyle = '#ea580c';
+        ctx.font = 'bold 12px monospace';
+        ctx.fillText(d.text, d.x, d.y);
+        ctx.fillStyle = '#fed7aa';
+        ctx.fillText(d.text, d.x - 0.5, d.y - 0.5);
+        ctx.restore();
+      });
+
+      // Floating +1
+      floatingTexts.forEach(f => {
+        ctx.save();
+        ctx.globalAlpha = f.alpha;
+        ctx.fillStyle = f.color;
+        ctx.font = 'bold 11px monospace';
+        ctx.fillText(f.text, f.x, f.y);
+        ctx.restore();
+      });
+    }
+
+    // DIBUJAR PARTICULAS
+    function renderParticles() {
+      ctx.save();
+      particles.forEach(p => {
+        ctx.fillStyle = p.color;
+        ctx.fillRect(Math.round(p.x), Math.round(p.y), p.size, p.size);
+      });
+      ctx.restore();
+    }
+
+    // HUD
+    function renderHUD() {
+      // Corazones
+      hearts.forEach((h, idx) => {
+        const hx = 14 + idx * 16;
+        const hy = 14;
+        if (!h.broken) {
+          drawHeart(hx, hy);
+        } else if (h.breakAnim) {
+          const anim = h.breakAnim;
+          if (anim.shakeTimer > 0) {
+            drawHeart(hx + (Math.random() - 0.5) * 4, hy);
+          } else {
+            drawSplitHalf(hx + anim.left.x, hy + anim.left.y, false, anim.left);
+            drawSplitHalf(hx + anim.right.x, hy + anim.right.y, true, anim.right);
+          }
+        }
+      });
+
+      // Contador de monedas en HUD (con bump elástico)
+      const bump = hudCoinBumpTimer > 0 ? 1.3 : 1.0;
+      ctx.save();
+      ctx.translate(18, 38);
+      ctx.scale(bump, bump);
+      ctx.fillStyle = '#eab308';
+      ctx.beginPath();
+      ctx.ellipse(0, 0, 4, 5, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#fef08a';
+      ctx.fillRect(-1, -2, 2, 4);
+
+      ctx.fillStyle = '#facc15';
+      ctx.font = 'bold 10px monospace';
+      ctx.fillText(`x ${hudCoins}`, 8, 4);
+      ctx.restore();
+    }
+
+    function drawHeart(x, y) {
+      ctx.fillStyle = '#e84d67';
+      const p = [[1,1,0,1,1],[1,1,1,1,1],[1,1,1,1,1],[0,1,1,1,0],[0,0,1,0,0]];
+      for(let r=0; r<p.length; r++) {
+        for(let c=0; c<p[r].length; c++) {
+          if (p[r][c]) ctx.fillRect(x + c * 2, y + r * 2, 2, 2);
+        }
+      }
+      ctx.fillStyle = '#ffb3c1'; ctx.fillRect(x + 2, y + 2, 2, 2);
+    }
+
+    function drawSplitHalf(x, y, isRight, part) {
+      ctx.save();
+      ctx.translate(x + (isRight ? 5 : 2), y + 4);
+      ctx.rotate(part.rot);
+      ctx.globalAlpha = Math.max(0, part.alpha);
+      ctx.fillStyle = '#e84d67';
+      if (!isRight) {
+        ctx.fillRect(-4, -4, 4, 2); ctx.fillRect(-4, -2, 4, 2); ctx.fillRect(-2, 0, 2, 2); ctx.fillRect(-1, 2, 1, 2);
+      } else {
+        ctx.fillRect(0, -4, 4, 2); ctx.fillRect(0, -2, 4, 2); ctx.fillRect(0, 0, 3, 2); ctx.fillRect(0, 2, 1, 2);
+      }
+      ctx.restore();
+    }
+
+    function renderVignette() {
+      if (vignetteTimer <= 0) return;
+      const alpha = (vignetteTimer / vignetteDuration) * 0.75;
+      ctx.save();
+      const bands = [{ w: 3, a: alpha }, { w: 6, a: alpha * 0.7 }, { w: 9, a: alpha * 0.4 }, { w: 14, a: alpha * 0.2 }];
+      bands.forEach(b => {
+        ctx.strokeStyle = `rgba(240, 28, 48, ${b.a})`;
+        ctx.lineWidth = b.w;
+        ctx.strokeRect(b.w / 2, b.w / 2, WIDTH - b.w, HEIGHT - b.w);
+      });
+      ctx.restore();
+    }
+
+    // UI DE VICTORIA: WIN BANNER & ESTRELLAS
+    function renderVictoryUI() {
+      ctx.save();
+      // 3. Win Banner
+      ctx.translate(WIDTH / 2, 45);
+      ctx.scale(victory.bannerScale, victory.bannerScale);
+      ctx.globalAlpha = victory.bannerAlpha;
+      ctx.fillStyle = '#f59e0b';
+      ctx.font = '900 18px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('YOU WIN!', 0, 0);
+      ctx.fillStyle = '#fef08a';
+      ctx.fillText('YOU WIN!', -1, -1);
+      ctx.restore();
+
+      // 4. Star Rating
+      victory.stars.forEach(s => {
+        if (s.active) {
+          ctx.save();
+          ctx.fillStyle = '#fbbf24';
+          ctx.font = '16px sans-serif';
+          ctx.fillText('★', s.slotX, s.y);
+          ctx.restore();
+        }
+      });
+    }
+
+    // BUCLE DEL JUEGO
+    let lastTime = performance.now();
+    function gameLoop(now) {
+      const dt = Math.min((now - lastTime) / 1000, 0.1);
+      lastTime = now;
+      update(dt);
+      render();
+      requestAnimationFrame(gameLoop);
+    }
+    requestAnimationFrame(gameLoop);
+
+    // ==========================================
+    // INTERFAZ DE USUARIO Y PANELES
+    // ==========================================
+    const categoryContent = {
+      combat: `
+        <div class="panel-header">
+          <div class="panel-title">⚔️ Hit Feedback & Taking Damage</div>
+          <span style="font-size:11px;color:#a78bfa;">Ataca al slime o déjate tocar</span>
+        </div>
+        <div class="actions-grid">
+          <button class="fx-btn hero-action" onclick="heroAttack()">
+            <strong>⚔️ ATACAR CON ESPADA (Z / X)</strong>
+            <span>Hit-Stop, Damage Numbers, White Flash y Chispas</span>
+          </button>
+          <button class="fx-btn" style="background:#5c1d2e;" onclick="onHeroTakeDamage()">
+            <strong>💔 RECIBIR DAÑO (FULL JUICE)</strong>
+            <span>Knockback 56px, I-Frames, Red Tint, Viñeta y Heart Break</span>
+          </button>
+          <button class="fx-btn" onclick="onSlimeHitByHero()">
+            <strong>💥 Probar Hit Feedback en Slime</strong>
+            <span>Screen shake 10px, 12 chispas y squash 138%</span>
+          </button>
+          <button class="fx-btn" onclick="breakNextHeart()">
+            <strong>💔 Partir Corazón del HUD</strong>
+            <span>Vibración y caída en 2 mitades con rotación</span>
+          </button>
+        </div>
+      `,
+      jump: `
+        <div class="panel-header">
+          <div class="panel-title">🦘 Jump & Land (Físicas de Salto)</div>
+          <span style="font-size:11px;color:#a78bfa;">Presiona [↑] o [W] para saltar</span>
+        </div>
+        <div class="actions-grid">
+          <button class="fx-btn hero-action" onclick="triggerHeroJump()">
+            <strong>🦘 SALTAR CON ANTICIPACIÓN</strong>
+            <span>Crouch 24% (0.18s), impulso estirado y ghost trail</span>
+          </button>
+          <button class="fx-btn" onclick="onHeroLand()">
+            <strong>💨 Forzar Efecto Aterrizaje</strong>
+            <span>Polvo lateral (3 nubes), cámara dip 12px y shock ring</span>
+          </button>
+        </div>
+      `,
+      chest: `
+        <div class="panel-header">
+          <div class="panel-title">📦 Chest Open (Apertura de Cofre)</div>
+          <span style="font-size:11px;color:#a78bfa;">Presiona [E] o usa el botón</span>
+        </div>
+        <div class="actions-grid">
+          <button class="fx-btn hero-action" onclick="triggerOpenChest()">
+            <strong>📦 ABRIR COFRE DE TESORO (E)</strong>
+            <span>Rattle ±6°, Light Rays 170px, Gema mítica y 14 monedas</span>
+          </button>
+          <button class="fx-btn" onclick="chest.isOpen=false;chest.gem=null;">
+            <strong>🔄 Cerrar y Resetear Cofre</strong>
+            <span>Prepara el cofre para volver a abrirlo</span>
+          </button>
+        </div>
+      `,
+      coin: `
+        <div class="panel-header">
+          <div class="panel-title">🪙 Coin Pickup (Recolección de Monedas)</div>
+          <span style="font-size:11px;color:#a78bfa;">Acércate a las monedas del suelo</span>
+        </div>
+        <div class="actions-grid">
+          <button class="fx-btn hero-action" onclick="spawnCoin(hero.x + (hero.facing*40), FLOOR_Y - 14, hero.facing*2, -3.5)">
+            <strong>🪙 Soltar Moneda Delante</strong>
+            <span>Efecto imán al acercarse, estiramiento y vuelo al HUD</span>
+          </button>
+          <button class="fx-btn" onclick="coins.forEach(c => collectCoin(c))">
+            <strong>✨ Recolectar Todas a la vez</strong>
+            <span>Sparkle pop, anillo 78px y '+1' flotante</span>
+          </button>
+        </div>
+      `,
+      victory: `
+        <div class="panel-header">
+          <div class="panel-title">🏆 Victory (Secuencia de Victoria)</div>
+          <span style="font-size:11px;color:#a78bfa;">Presiona [V] o usa el botón</span>
+        </div>
+        <div class="actions-grid">
+          <button class="fx-btn hero-action" style="grid-column: span 2; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);" onclick="triggerVictory()">
+            <strong>🏆 ACTIVAR SECUENCIA DE VICTORIA (V)</strong>
+            <span>Salto 360°, confeti pop, YOU WIN! banner, 3 estrellas y fuegos</span>
+          </button>
+        </div>
+      `
+    };
+
+    function switchCategory(cat) {
+      activeCategory = cat;
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      event.target.classList.add('active');
+      renderPanel();
+    }
+
+    function renderPanel() {
+      const container = document.getElementById('panelContainer');
+      container.innerHTML = categoryContent[activeCategory] + `
+        <div class="toggles-bar">
+          <span>Prueba las teclas [Z], [E], [V] o haz clic en los botones.</span>
+          <button class="reset-btn" onclick="resetAll()">❤️ Resetear Todo</button>
+        </div>
+      `;
+    }
+    renderPanel();
+
+    function resetAll() {
+      hero.x = 65; hero.y = FLOOR_Y; hero.vx = 0; hero.vy = 0; hero.isKnocked = false; hero.iFrameTimer = 0;
+      slime.x = 185; slime.y = FLOOR_Y; slime.hp = 3; slime.isAlive = true;
+      chest.isOpen = false; chest.gem = null;
+      victory.active = false;
+      hearts.forEach(h => { h.broken = false; h.breakAnim = null; });
+      particles.length = 0; coins.length = 0;
+      spawnCoin(135, FLOOR_Y - 12);
+    }
+
+    // TECLADO
+    window.addEventListener('keydown', (e) => {
+      if (e.code === 'ArrowLeft' || e.code === 'KeyA') keys.left = true;
+      if (e.code === 'ArrowRight' || e.code === 'KeyD') keys.right = true;
+      if (e.code === 'ArrowUp' || e.code === 'KeyW') { keys.up = true; triggerHeroJump(); }
+      if (e.code === 'KeyZ' || e.code === 'KeyX' || e.code === 'Space') { e.preventDefault(); heroAttack(); }
+      if (e.code === 'KeyE') triggerOpenChest();
+      if (e.code === 'KeyV') triggerVictory();
+
+      if (e.key === '1') onSlimeHitByHero();
+      if (e.key === '2') onHeroTakeDamage();
+      if (e.key === '3') triggerHeroJump();
+      if (e.key === '4') triggerOpenChest();
+      if (e.key === '5') spawnCoin(hero.x + 30, FLOOR_Y - 15, 1, -3);
+      if (e.key === '6') triggerVictory();
+    });
+
+    window.addEventListener('keyup', (e) => {
+      if (e.code === 'ArrowLeft' || e.code === 'KeyA') keys.left = false;
+      if (e.code === 'ArrowRight' || e.code === 'KeyD') keys.right = false;
+      if (e.code === 'ArrowUp' || e.code === 'KeyW') keys.up = false;
+    });
+
+    canvas.addEventListener('mousedown', () => heroAttack());
+  </script>
+</body>
+</html>
