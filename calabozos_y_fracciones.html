@@ -2952,6 +2952,81 @@
       };
     }
 
+    function drawMapMountain(cx, baseY, w, h, bodyColor, lightColor, snow = false) {
+      // Cara sombreada (derecha)
+      wmCtx.fillStyle = bodyColor;
+      wmCtx.beginPath();
+      wmCtx.moveTo(cx - w / 2, baseY);
+      wmCtx.lineTo(cx, baseY - h);
+      wmCtx.lineTo(cx + w / 2, baseY);
+      wmCtx.closePath();
+      wmCtx.fill();
+      // Cara iluminada (izquierda)
+      wmCtx.fillStyle = lightColor;
+      wmCtx.beginPath();
+      wmCtx.moveTo(cx - w / 2, baseY);
+      wmCtx.lineTo(cx, baseY - h);
+      wmCtx.lineTo(cx - w * 0.08, baseY);
+      wmCtx.closePath();
+      wmCtx.fill();
+      if (snow) {
+        wmCtx.fillStyle = '#e2e8f0';
+        wmCtx.beginPath();
+        wmCtx.moveTo(cx - w * 0.22, baseY - h * 0.56);
+        wmCtx.lineTo(cx, baseY - h);
+        wmCtx.lineTo(cx + w * 0.22, baseY - h * 0.56);
+        wmCtx.lineTo(cx + w * 0.08, baseY - h * 0.48);
+        wmCtx.lineTo(cx, baseY - h * 0.58);
+        wmCtx.lineTo(cx - w * 0.08, baseY - h * 0.48);
+        wmCtx.closePath();
+        wmCtx.fill();
+      }
+    }
+
+    function drawMapTree(tx, ty, darkCol, midCol, lightCol, magicGlow = false) {
+      // Sombra bajo árbol
+      wmCtx.fillStyle = 'rgba(0,0,0,0.28)';
+      wmCtx.beginPath(); wmCtx.ellipse(tx, ty + 2, 7, 2.5, 0, 0, Math.PI * 2); wmCtx.fill();
+      // Tronco
+      wmCtx.fillStyle = '#5c3a21';
+      wmCtx.fillRect(tx - 2, ty - 4, 4, 6);
+      // Copa en 3 niveles pixel art
+      wmCtx.fillStyle = darkCol;
+      wmCtx.fillRect(tx - 8, ty - 10, 16, 7);
+      wmCtx.fillStyle = midCol;
+      wmCtx.fillRect(tx - 7, ty - 14, 14, 7);
+      wmCtx.fillRect(tx - 5, ty - 17, 10, 4);
+      wmCtx.fillStyle = lightCol;
+      wmCtx.fillRect(tx - 5, ty - 15, 6, 3);
+      if (magicGlow) {
+        wmCtx.fillStyle = '#38f8d4';
+        wmCtx.fillRect(tx + 2, ty - 11, 2, 2);
+      }
+    }
+
+    function drawMapHouse(hx, hy, roofCol) {
+      wmCtx.fillStyle = 'rgba(0,0,0,0.3)';
+      wmCtx.fillRect(hx - 1, hy + 11, 18, 3);
+      // Paredes de piedra/madera
+      wmCtx.fillStyle = '#d6c3a5';
+      wmCtx.fillRect(hx, hy + 2, 16, 10);
+      wmCtx.fillStyle = '#a89070';
+      wmCtx.fillRect(hx + 11, hy + 2, 5, 10);
+      // Techo a dos aguas
+      wmCtx.fillStyle = roofCol;
+      wmCtx.beginPath();
+      wmCtx.moveTo(hx - 3, hy + 3);
+      wmCtx.lineTo(hx + 8, hy - 6);
+      wmCtx.lineTo(hx + 19, hy + 3);
+      wmCtx.closePath();
+      wmCtx.fill();
+      // Puerta y ventana iluminada
+      wmCtx.fillStyle = '#5c3a21';
+      wmCtx.fillRect(hx + 3, hy + 6, 4, 6);
+      wmCtx.fillStyle = '#fde047';
+      wmCtx.fillRect(hx + 10, hy + 5, 3, 3);
+    }
+
     function renderWorldMap(t, dt) {
       const mW = 480, mH = 210;
       const d1Done = gameState.dungeonsCompleted[1] || gameState.player.isDev;
@@ -2973,107 +3048,203 @@
         }
       }
 
-      // 1. Fondo de Mapa Fantasía (Océano nocturno + continente pixel art)
-      wmCtx.fillStyle = '#0f1c2e';
+      // 1. OCÉANO PROFUNDO CON DEGRADADO Y OLAS ANIMADAS
+      const seaGrad = wmCtx.createLinearGradient(0, 0, 0, mH);
+      seaGrad.addColorStop(0, '#0c2340');
+      seaGrad.addColorStop(0.5, '#12355b');
+      seaGrad.addColorStop(1, '#09192e');
+      wmCtx.fillStyle = seaGrad;
       wmCtx.fillRect(0, 0, mW, mH);
 
-      // Olas suaves en el mar
-      wmCtx.fillStyle = '#162942';
-      for (let i = 0; i < 12; i++) {
-        const wx = ((i * 45 + Math.sin(t + i) * 6) % mW);
-        const wy = 18 + (i % 4) * 48;
-        wmCtx.fillRect(Math.round(wx), wy, 14, 2);
+      wmCtx.fillStyle = 'rgba(125, 211, 252, 0.16)';
+      for (let i = 0; i < 18; i++) {
+        const wx = ((i * 53 + t * 8) % (mW + 20)) - 10;
+        const wy = 14 + (i * 29) % (mH - 20);
+        wmCtx.fillRect(Math.round(wx), wy, 10 + (i % 3) * 4, 2);
       }
 
-      // Continente principal (3 biomas: Pradera -> Tierras Rocosas -> Bosque Esmeralda -> Cumbres Heladas)
-      // Pradera / Aldea (izquierda)
-      wmCtx.fillStyle = '#234232';
-      wmCtx.beginPath(); wmCtx.roundRect(16, 48, 120, 138, 22); wmCtx.fill();
-      // Tierras Rocosas de los Goblins (centro-izq)
-      wmCtx.fillStyle = '#2e253b';
-      wmCtx.beginPath(); wmCtx.roundRect(108, 42, 120, 142, 20); wmCtx.fill();
-      // Bosque Encantado (centro-der)
-      wmCtx.fillStyle = '#153a30';
-      wmCtx.beginPath(); wmCtx.roundRect(228, 36, 132, 148, 22); wmCtx.fill();
-      // Cumbres Heladas / Cripta (extremo der)
-      wmCtx.fillStyle = '#272c47';
-      wmCtx.beginPath(); wmCtx.roundRect(344, 26, 120, 152, 20); wmCtx.fill();
+      // 2. CONTINENTE ORGÁNICO ÚNICO (CON ESPUMA, ACANTILADO Y PLAYA)
+      const islandPath = () => {
+        wmCtx.beginPath();
+        wmCtx.moveTo(22, 146);
+        wmCtx.bezierCurveTo(14, 96, 36, 56, 86, 52);
+        wmCtx.bezierCurveTo(132, 48, 152, 34, 206, 40);
+        wmCtx.bezierCurveTo(256, 44, 286, 26, 344, 30);
+        wmCtx.bezierCurveTo(404, 34, 456, 42, 462, 88);
+        wmCtx.bezierCurveTo(468, 134, 434, 168, 378, 174);
+        wmCtx.bezierCurveTo(324, 180, 286, 172, 234, 178);
+        wmCtx.bezierCurveTo(182, 184, 142, 172, 92, 178);
+        wmCtx.bezierCurveTo(48, 182, 28, 170, 22, 146);
+        wmCtx.closePath();
+      };
 
-      // Río azul cruzando entre Mazmorra 1 y Mazmorra 2
-      wmCtx.strokeStyle = '#1d4ed8';
-      wmCtx.lineWidth = 10;
-      wmCtx.beginPath();
-      wmCtx.moveTo(232, 34);
-      wmCtx.quadraticCurveTo(244, 105, 226, 188);
+      // Espuma animada del océano bordeando la isla
+      wmCtx.save();
+      const foamExpand = 4 + Math.sin(t * 2.5) * 1.5;
+      wmCtx.strokeStyle = 'rgba(186, 230, 253, 0.35)';
+      wmCtx.lineWidth = foamExpand * 2;
+      islandPath();
       wmCtx.stroke();
-      wmCtx.strokeStyle = '#38bdf8';
+
+      // Acantilado / sombra terrestre sur
+      wmCtx.translate(0, 6);
+      wmCtx.fillStyle = '#4a3525';
+      islandPath();
+      wmCtx.fill();
+      wmCtx.restore();
+
+      // Orilla de arena dorada
+      wmCtx.strokeStyle = '#c2a26b';
+      wmCtx.lineWidth = 4;
+      islandPath();
+      wmCtx.stroke();
+
+      // Relleno de biomas con clipping orgánico dentro de la isla
+      wmCtx.save();
+      islandPath();
+      wmCtx.clip();
+
+      // Degradado continuo de biomas: Pradera -> Tierras Rocosas -> Bosque Esmeralda -> Cumbres Heladas
+      const landGrad = wmCtx.createLinearGradient(20, 0, 460, 0);
+      landGrad.addColorStop(0.0, '#2f6a44');
+      landGrad.addColorStop(0.24, '#366f46');
+      landGrad.addColorStop(0.34, '#43384d');
+      landGrad.addColorStop(0.50, '#3a2f47');
+      landGrad.addColorStop(0.58, '#1b5442');
+      landGrad.addColorStop(0.76, '#14473a');
+      landGrad.addColorStop(0.84, '#3b4566');
+      landGrad.addColorStop(1.0, '#4f5d82');
+      wmCtx.fillStyle = landGrad;
+      wmCtx.fillRect(0, 0, mW, mH);
+
+      // Textura sutil de pasto / tierra pixelada
+      for (let i = 0; i < 65; i++) {
+        const px = 28 + (i * 41) % 425;
+        const py = 44 + (i * 23) % 128;
+        wmCtx.fillStyle = i % 2 === 0 ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.08)';
+        wmCtx.fillRect(px, py, 4, 2);
+      }
+
+      // Río serpenteante con cascada desde el norte hasta el mar
+      wmCtx.strokeStyle = '#1e40af';
+      wmCtx.lineWidth = 13;
+      wmCtx.beginPath();
+      wmCtx.moveTo(234, 24);
+      wmCtx.bezierCurveTo(222, 72, 252, 118, 228, 186);
+      wmCtx.stroke();
+
+      wmCtx.strokeStyle = '#2563eb';
+      wmCtx.lineWidth = 8;
+      wmCtx.stroke();
+
+      // Brillos de corriente animada en el río
+      wmCtx.strokeStyle = '#7dd3fc';
       wmCtx.lineWidth = 2;
+      wmCtx.setLineDash([4, 8]);
+      wmCtx.lineDashOffset = -t * 14;
+      wmCtx.stroke();
+      wmCtx.setLineDash([]);
+
+      // Sendero de tierra pintado suavemente bajo el camino punteado
+      wmCtx.strokeStyle = 'rgba(138, 109, 86, 0.72)';
+      wmCtx.lineWidth = 8;
+      wmCtx.lineCap = 'round';
+      wmCtx.lineJoin = 'round';
       wmCtx.beginPath();
-      wmCtx.moveTo(232, 34);
-      wmCtx.quadraticCurveTo(244, 105, 226, 188);
+      MAP_PATH_POINTS.forEach((pt, idx) => {
+        if (idx === 0) wmCtx.moveTo(pt.x, pt.y);
+        else wmCtx.lineTo(pt.x, pt.y);
+      });
+      wmCtx.stroke();
+      wmCtx.strokeStyle = 'rgba(181, 148, 116, 0.55)';
+      wmCtx.lineWidth = 3;
       wmCtx.stroke();
 
-      // Puente de madera sobre el río
-      wmCtx.fillStyle = '#92400e';
-      wmCtx.fillRect(226, 129, 20, 12);
+      wmCtx.restore(); // Fin del clip de la isla
+
+      // Puente de madera detallado con barandas y sombra
+      wmCtx.fillStyle = 'rgba(0,0,0,0.35)';
+      wmCtx.fillRect(225, 138, 22, 4);
+      wmCtx.fillStyle = '#78350f';
+      wmCtx.fillRect(224, 128, 24, 12);
       wmCtx.fillStyle = '#b45309';
-      for (let px = 228; px < 245; px += 4) wmCtx.fillRect(px, 130, 2, 10);
+      for (let bx = 226; bx < 247; bx += 4) wmCtx.fillRect(bx, 129, 2, 10);
+      // Postes de baranda
+      wmCtx.fillStyle = '#fde68a';
+      wmCtx.fillRect(225, 126, 2, 3); wmCtx.fillRect(245, 126, 2, 3);
 
-      // 2. Decoraciones geográficas de cada bioma
-      // Aldea inicial (casita + fogata animada)
-      wmCtx.fillStyle = '#92400e'; wmCtx.fillRect(36, 122, 18, 14);
-      wmCtx.fillStyle = '#b91c1c';
-      wmCtx.beginPath(); wmCtx.moveTo(33, 122); wmCtx.lineTo(45, 110); wmCtx.lineTo(57, 122); wmCtx.fill();
-      wmCtx.fillStyle = '#fde047'; wmCtx.fillRect(43, 128, 4, 6);
-      // Fogata
+      // 3. PUNTOS DE INTERÉS DETALLADOS POR BIOMA
+      // --- Oeste: Aldea / Campamento ---
+      drawMapTree(34, 104, '#14532d', '#16a34a', '#4ade80');
+      drawMapTree(84, 96, '#14532d', '#16a34a', '#4ade80');
+      drawMapTree(66, 162, '#14532d', '#15803d', '#22c55e');
+      drawMapHouse(38, 118, '#dc2626');
+      drawMapHouse(62, 106, '#2563eb');
+      // Fogata del campamento con chispas
+      wmCtx.fillStyle = '#78350f'; wmCtx.fillRect(58, 137, 6, 2);
       wmCtx.fillStyle = Math.sin(t * 14) > 0 ? '#f97316' : '#facc15';
-      wmCtx.fillRect(62, 136, 4, 5);
+      wmCtx.fillRect(59, 133, 4, 4);
+      wmCtx.fillStyle = '#fff'; wmCtx.fillRect(60, 135, 2, 2);
 
-      // Montañas rocosas alrededor de la Guarida de Goblins
-      wmCtx.fillStyle = '#3d314f';
-      [[124, 96], [174, 86], [198, 100]].forEach(([mx, my]) => {
-        wmCtx.beginPath(); wmCtx.moveTo(mx - 14, my); wmCtx.lineTo(mx, my - 22); wmCtx.lineTo(mx + 14, my); wmCtx.fill();
+      // --- Centro-Oeste: Cordillera y Guarida de los Goblins ---
+      drawMapMountain(134, 98, 36, 36, '#3b2e4d', '#54436b');
+      drawMapMountain(184, 96, 40, 42, '#342845', '#4c3c63');
+      drawMapMountain(160, 92, 32, 32, '#2d223d', '#453659');
+      // Fuerte / Entrada de Calabozo detallada
+      wmCtx.fillStyle = '#4c3e61'; wmCtx.fillRect(140, 90, 36, 28);
+      wmCtx.fillStyle = '#62517a'; wmCtx.fillRect(138, 86, 40, 5); // almena
+      wmCtx.fillStyle = '#0d0914';
+      wmCtx.beginPath(); wmCtx.roundRect(149, 98, 18, 20, [9, 9, 0, 0]); wmCtx.fill();
+      // Cráneo tallado sobre la entrada
+      wmCtx.fillStyle = '#e2e8f0'; wmCtx.fillRect(155, 91, 6, 5);
+      wmCtx.fillStyle = '#1e1626'; wmCtx.fillRect(156, 93, 1, 2); wmCtx.fillRect(159, 93, 1, 2);
+      // Antorchas parpadeantes en la entrada
+      const tf = Math.sin(t * 16) > 0;
+      wmCtx.fillStyle = tf ? '#f97316' : '#fde047';
+      wmCtx.fillRect(143, 102, 3, 4); wmCtx.fillRect(170, 102, 3, 4);
+
+      // --- Centro-Este: Bosque Encantado ---
+      const fDark = d1Done ? '#064e3b' : '#13332a';
+      const fMid  = d1Done ? '#059669' : '#1b473b';
+      const fLit  = d1Done ? '#34d399' : '#265c4d';
+      [[272, 92], [292, 78], [322, 82], [338, 98], [282, 114], [328, 118], [306, 98]].forEach(([tx, ty], i) => {
+        drawMapTree(tx, ty, fDark, fMid, fLit, d1Done && i % 2 === 0);
       });
-
-      // Entrada de la Mazmorra 1: Caverna de piedra con antorchas
-      wmCtx.fillStyle = '#473a59'; wmCtx.fillRect(142, 92, 32, 26);
-      wmCtx.fillStyle = '#0e0a14'; wmCtx.beginPath(); wmCtx.roundRect(149, 100, 18, 18, [9, 9, 0, 0]); wmCtx.fill();
-      wmCtx.fillStyle = Math.sin(t * 15) > 0 ? '#f97316' : '#fde047';
-      wmCtx.fillRect(144, 103, 3, 4); wmCtx.fillRect(169, 103, 3, 4);
-
-      // Árboles mágicos del Bosque Encantado (Mazmorra 2)
-      [[278, 86], [306, 78], [332, 92], [292, 102], [322, 104]].forEach(([tx, ty]) => {
-        wmCtx.fillStyle = '#573621'; wmCtx.fillRect(tx - 2, ty, 4, 10);
-        wmCtx.fillStyle = d1Done ? '#10b981' : '#1e463a';
-        wmCtx.beginPath(); wmCtx.arc(tx, ty - 2, 10, 0, Math.PI * 2); wmCtx.fill();
-        if (d1Done) {
-          wmCtx.fillStyle = '#38f8d4';
-          wmCtx.fillRect(tx - 3, ty - 4, 2, 2);
+      // Luciérnagas en el Bosque Encantado
+      if (d1Done) {
+        for (let i = 0; i < 6; i++) {
+          const fx = 274 + (i * 13) + Math.sin(t * 2 + i) * 6;
+          const fy = 82 + (i % 3) * 14 + Math.cos(t * 2.2 + i) * 5;
+          wmCtx.fillStyle = i % 2 === 0 ? '#fde047' : '#38f8d4';
+          wmCtx.fillRect(Math.round(fx), Math.round(fy), 2, 2);
         }
-      });
+      }
 
-      // Cripta del Rey Fraccionario (Mazmorra 3 - Montañas nevadas)
-      wmCtx.fillStyle = '#3b4266';
-      wmCtx.beginPath(); wmCtx.moveTo(395, 92); wmCtx.lineTo(422, 42); wmCtx.lineTo(450, 92); wmCtx.fill();
-      wmCtx.fillStyle = '#cbd5e1';
-      wmCtx.beginPath(); wmCtx.moveTo(414, 57); wmCtx.lineTo(422, 42); wmCtx.lineTo(431, 57); wmCtx.fill();
-      // Torre oscura de la cripta
-      wmCtx.fillStyle = '#1e1b33'; wmCtx.fillRect(414, 62, 16, 20);
-      wmCtx.fillStyle = '#a855f7'; wmCtx.fillRect(420, 68, 4, 5);
+      // --- Este: Cumbres Heladas y Cripta del Rey Fraccionario ---
+      drawMapMountain(392, 92, 38, 42, '#333b5c', '#505c8a', true);
+      drawMapMountain(442, 96, 36, 38, '#2d3452', '#47537d', true);
+      drawMapMountain(418, 90, 46, 52, '#272d47', '#424d75', true);
+      // Fortaleza gótica de la Cripta
+      wmCtx.fillStyle = '#18142b';
+      wmCtx.fillRect(408, 60, 20, 22);
+      wmCtx.fillRect(405, 54, 6, 8); wmCtx.fillRect(425, 54, 6, 8);
+      // Portal púrpura pulsante
+      wmCtx.fillStyle = Math.sin(t * 4) > 0 ? '#c084fc' : '#a855f7';
+      wmCtx.fillRect(415, 68, 6, 10);
 
-      // 3. CAMINO PUNTEADO DEL RECORRIDO
+      // 4. MARCADORES PUNTEADOS DEL RECORRIDO SOBRE EL SENDERO
       for (let i = 0; i < MAP_PATH_POINTS.length - 1; i++) {
         const a = MAP_PATH_POINTS[i], b = MAP_PATH_POINTS[i + 1];
         const unlockedSeg = (i < 3) || (i < 7 && d1Done) || (i >= 7 && d2Done);
-        for (let s = 0; s < 5; s++) {
+        for (let s = 1; s < 5; s++) {
           const px = a.x + (b.x - a.x) * (s / 5);
           const py = a.y + (b.y - a.y) * (s / 5);
-          wmCtx.fillStyle = unlockedSeg ? '#fbbf24' : '#4b5563';
+          wmCtx.fillStyle = unlockedSeg ? '#fde047' : 'rgba(148,163,184,0.45)';
           wmCtx.fillRect(Math.round(px) - 1, Math.round(py) - 1, 3, 3);
         }
       }
 
-      // 4. NODOS DE DESTINO + ETIQUETAS + ESTRELLAS DE COMPLETADO
+      // 5. NODOS DE DESTINO + ETIQUETAS + ESTRELLAS
       const nodes = [
         { pt: MAP_PATH_POINTS[0], label: 'Campamento', color: '#38f8d4', unlocked: true, done: false },
         { pt: MAP_PATH_POINTS[3], label: '1. Guarida Goblins', color: '#fbbf24', unlocked: true, done: gameState.dungeonsCompleted[1] },
@@ -3082,52 +3253,69 @@
       ];
 
       nodes.forEach((n, idx) => {
-        // Halo pulsante en nodos desbloqueados
         if (n.unlocked && idx > 0) {
           const pulse = 7 + Math.sin(t * 5 + idx) * 2;
           wmCtx.strokeStyle = n.color;
           wmCtx.lineWidth = 1.5;
-          wmCtx.beginPath();
-          wmCtx.arc(n.pt.x, n.pt.y, pulse, 0, Math.PI * 2);
-          wmCtx.stroke();
+          wmCtx.beginPath(); wmCtx.arc(n.pt.x, n.pt.y, pulse, 0, Math.PI * 2); wmCtx.stroke();
         }
-        // Círculo del nodo
-        wmCtx.fillStyle = n.unlocked ? n.color : '#475569';
-        wmCtx.beginPath();
-        wmCtx.arc(n.pt.x, n.pt.y, 5, 0, Math.PI * 2);
-        wmCtx.fill();
         wmCtx.fillStyle = '#0e0b14';
-        wmCtx.beginPath();
-        wmCtx.arc(n.pt.x, n.pt.y, 2, 0, Math.PI * 2);
-        wmCtx.fill();
+        wmCtx.beginPath(); wmCtx.arc(n.pt.x, n.pt.y, 6, 0, Math.PI * 2); wmCtx.fill();
+        wmCtx.fillStyle = n.unlocked ? n.color : '#64748b';
+        wmCtx.beginPath(); wmCtx.arc(n.pt.x, n.pt.y, 4, 0, Math.PI * 2); wmCtx.fill();
 
-        // Bandera / Estrella si está completada
         if (n.done) {
           wmCtx.fillStyle = '#fde047';
-          wmCtx.font = 'bold 11px sans-serif';
+          wmCtx.font = 'bold 12px sans-serif';
           wmCtx.textAlign = 'center';
-          wmCtx.fillText('★', n.pt.x, n.pt.y - 12);
+          wmCtx.fillText('★', n.pt.x, n.pt.y - 14);
         }
 
-        // Etiqueta del lugar
         wmCtx.font = 'bold 8px monospace';
         wmCtx.textAlign = 'center';
-        wmCtx.fillStyle = 'rgba(10, 8, 18, 0.82)';
-        wmCtx.fillRect(n.pt.x - 42, n.pt.y + 10, 84, 12);
+        const tw = n.label.length * 5.2 + 10;
+        wmCtx.fillStyle = 'rgba(11, 8, 20, 0.86)';
+        wmCtx.fillRect(n.pt.x - tw / 2, n.pt.y + 10, tw, 12);
+        wmCtx.strokeStyle = n.unlocked ? n.color : '#475569';
+        wmCtx.lineWidth = 1;
+        wmCtx.strokeRect(n.pt.x - tw / 2, n.pt.y + 10, tw, 12);
         wmCtx.fillStyle = n.unlocked ? '#ffffff' : '#94a3b8';
         wmCtx.fillText(n.label, n.pt.x, n.pt.y + 19);
       });
 
-      // 5. HÉROE PIXEL ART CAMINANDO SOBRE EL RECORRIDO
+      // 6. HÉROE PIXEL ART CAMINANDO SOBRE EL RECORRIDO
       const hPos = getMapPos(worldMapHero.progress);
       const avDef = AVATARS.find(a => a.id === gameState.player.avatarId) || AVATARS[0];
       wmCtx.save();
       wmCtx.translate(Math.round(hPos.x), Math.round(hPos.y - 2));
-      // Sombra bajo el héroe
       wmCtx.fillStyle = 'rgba(0,0,0,0.45)';
       wmCtx.beginPath(); wmCtx.ellipse(0, 0, 7, 3, 0, 0, Math.PI * 2); wmCtx.fill();
-      // Dibujar avatar pixel art
       drawPixelHero(wmCtx, -9, -22, avDef, 'normal', 1, false, worldMapHero.walkTimer);
+      wmCtx.restore();
+
+      // 7. NUBES SUAVES + ROSA DE LOS VIENTOS DE CARTOGRAFÍA
+      wmCtx.fillStyle = 'rgba(255, 255, 255, 0.08)';
+      [0, 1, 2].forEach(cIdx => {
+        const cx = ((cIdx * 175 + t * 5) % (mW + 60)) - 30;
+        const cy = 18 + cIdx * 12;
+        wmCtx.fillRect(Math.round(cx), cy, 28, 6);
+        wmCtx.fillRect(Math.round(cx) + 6, cy - 3, 16, 4);
+      });
+
+      // Rosa de los vientos en la esquina superior izquierda
+      wmCtx.save();
+      wmCtx.translate(22, 22);
+      wmCtx.strokeStyle = 'rgba(251, 191, 36, 0.55)';
+      wmCtx.lineWidth = 1;
+      wmCtx.beginPath(); wmCtx.arc(0, 0, 11, 0, Math.PI * 2); wmCtx.stroke();
+      wmCtx.fillStyle = '#fbbf24';
+      wmCtx.beginPath(); wmCtx.moveTo(0, -10); wmCtx.lineTo(3, 0); wmCtx.lineTo(-3, 0); wmCtx.fill();
+      wmCtx.fillStyle = '#94a3b8';
+      wmCtx.beginPath(); wmCtx.moveTo(0, 10); wmCtx.lineTo(3, 0); wmCtx.lineTo(-3, 0); wmCtx.fill();
+      wmCtx.font = 'bold 6px monospace';
+      wmCtx.textAlign = 'center';
+      wmCtx.fillStyle = '#fde047';
+      wmCtx.fillText('N', 0, -12);
       wmCtx.restore();
     }
 
