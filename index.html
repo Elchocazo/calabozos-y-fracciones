@@ -421,6 +421,73 @@
       font-size: 12px;
     }
 
+    /* Tarjeta de Habilidad Especial de Clase */
+    .special-card {
+      background: linear-gradient(180deg, #1b132b 0%, #150e23 100%);
+      border: 1.5px solid #3c2c5a;
+      border-radius: 10px;
+      padding: 9px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+      transition: border-color 0.25s, box-shadow 0.25s;
+    }
+    .special-card.ready {
+      border-color: #fbbf24;
+      box-shadow: 0 0 14px rgba(251, 191, 36, 0.28), inset 0 0 10px rgba(251, 191, 36, 0.08);
+    }
+    .special-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11px;
+      font-weight: 800;
+    }
+    .special-pips {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 5px;
+    }
+    .special-pip {
+      height: 7px;
+      border-radius: 999px;
+      background: #271d3a;
+      border: 1px solid #3c2d57;
+      transition: background 0.25s, box-shadow 0.25s, border-color 0.25s;
+    }
+    .special-pip.filled {
+      background: linear-gradient(90deg, #f59e0b, #fde047);
+      border-color: #fef08a;
+      box-shadow: 0 0 6px rgba(253, 224, 71, 0.55);
+    }
+    .btn-special {
+      width: 100%;
+      font-size: 12px;
+      padding: 7px 10px;
+      border-radius: 8px;
+      background: #231936;
+      border: 1.5px solid #3d2e59;
+      color: #8f82a8;
+      opacity: 1 !important;
+      transition: all 0.2s ease;
+    }
+    .btn-special:not(:disabled) {
+      background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 50%, #fde047 100%);
+      border-color: #fef08a;
+      color: #1c1005;
+      font-weight: 800;
+      box-shadow: 0 3px 12px rgba(245, 158, 11, 0.45);
+      animation: specialReadyPulse 1.6s ease-in-out infinite;
+    }
+    .btn-special:not(:disabled):hover {
+      filter: brightness(1.08);
+      transform: translateY(-1px);
+    }
+    @keyframes specialReadyPulse {
+      0%, 100% { box-shadow: 0 3px 12px rgba(245, 158, 11, 0.45); }
+      50% { box-shadow: 0 3px 20px rgba(253, 224, 71, 0.85); }
+    }
+
     /* Columna Principal de Juego */
     .battle-main {
       display: flex;
@@ -994,22 +1061,24 @@
           <i class="fas fa-shield-alt"></i> Escudo activo (bloquea 1 fallo)
         </div>
 
-        <!-- Barra de Habilidad Especial de Clase -->
-        <div>
-          <div style="display:flex; justify-content:space-between; font-size:11px; color:#fde047; margin-bottom:4px; font-weight:700;">
-            <span id="ui-special-name">⚡ Poder Especial</span>
-            <span id="ui-special-charge">0 / 3</span>
+        <!-- Tarjeta de Habilidad Especial de Clase -->
+        <div id="ui-special-card" class="special-card">
+          <div class="special-header">
+            <span id="ui-special-name" style="color:#fde047;">⚡ Poder Especial</span>
+            <span id="ui-special-charge" style="color:#c4b5fd; font-size:10px;">0 / 3</span>
           </div>
-          <div class="bar-wrap" style="height:12px; margin-bottom:6px;">
-            <div id="ui-special-fill" class="bar-fill" style="width:0%; background:linear-gradient(90deg,#f59e0b,#fde047);"></div>
+          <div class="special-pips">
+            <div id="ui-special-pip-1" class="special-pip"></div>
+            <div id="ui-special-pip-2" class="special-pip"></div>
+            <div id="ui-special-pip-3" class="special-pip"></div>
           </div>
-          <button id="btn-use-special" class="btn-retro btn-gold" style="width:100%; font-size:12px; padding:7px;" disabled>
-            <i class="fas fa-bolt"></i> Usar Especial (Q)
+          <button id="btn-use-special" class="btn-retro btn-special" disabled>
+            <i class="fas fa-bolt"></i> Especial (0/3)
           </button>
         </div>
 
         <div class="sidebar-actions">
-          <button id="btn-open-inventory" class="btn-retro"><i class="fas fa-backpack"></i> Mochila</button>
+          <button id="btn-open-inventory" class="btn-retro"><i class="fas fa-suitcase"></i> Mochila</button>
           <button id="btn-open-shop" class="btn-retro btn-gold"><i class="fas fa-store"></i> Tienda</button>
           <button id="btn-open-achievements" class="btn-retro"><i class="fas fa-trophy"></i> Logros</button>
           <button id="btn-open-bestiary" class="btn-retro"><i class="fas fa-dragon"></i> Bestiario</button>
@@ -4653,22 +4722,42 @@
       drawPixelHero(mctx, 3, 2, avDef);
 
       // Actualizar barra de Poder Especial de Clase
-      const spBtn = document.getElementById('btn-use-special');
-      const spName = document.getElementById('ui-special-name');
-      const spCharge = document.getElementById('ui-special-charge');
-      const spFill = document.getElementById('ui-special-fill');
-      if (spName) spName.textContent = avDef.specialName || '⚡ Especial';
-      if (spCharge) spCharge.textContent = `${gameState.player.specialCharge} / 3`;
-      if (spFill) spFill.style.width = `${Math.min(100, (gameState.player.specialCharge / 3) * 100)}%`;
-      if (spBtn) {
-        spBtn.disabled = gameState.player.specialCharge < 3 || gameState.attackLocked || gameState.waitingChest || gameState.dungeonVictory;
-        spBtn.title = avDef.specialDesc || '';
-      }
+      updateSpecialButtonUI();
 
       updateModeBanner();
       updateEnemyTurnBar();
       checkAchievements();
       saveGameProgress();
+    }
+
+    function updateSpecialButtonUI() {
+      const avDef = AVATARS.find(a => a.id === gameState.player.avatarId) || AVATARS[0];
+      const charge = gameState.player.specialCharge || 0;
+      const isCharged = charge >= 3;
+      const canUse = isCharged && !gameState.attackLocked && !gameState.waitingChest && !gameState.dungeonVictory;
+
+      const spCard = document.getElementById('ui-special-card');
+      const spBtn = document.getElementById('btn-use-special');
+      const spName = document.getElementById('ui-special-name');
+      const spCharge = document.getElementById('ui-special-charge');
+
+      if (spName) spName.textContent = avDef.specialName || '⚡ Especial';
+      if (spCharge) {
+        spCharge.textContent = isCharged ? '¡LISTO!' : `${charge} / 3`;
+        spCharge.style.color = isCharged ? '#fde047' : '#a799c2';
+      }
+      for (let i = 1; i <= 3; i++) {
+        const pip = document.getElementById(`ui-special-pip-${i}`);
+        if (pip) pip.classList.toggle('filled', charge >= i);
+      }
+      if (spCard) spCard.classList.toggle('ready', canUse);
+      if (spBtn) {
+        spBtn.disabled = !canUse;
+        spBtn.title = avDef.specialDesc || '';
+        spBtn.innerHTML = isCharged
+          ? '<i class="fas fa-bolt"></i> ¡Usar Especial! (Q)'
+          : `<i class="fas fa-bolt"></i> Especial (${charge}/3)`;
+      }
     }
 
     let tauntTimeout;
@@ -4682,6 +4771,7 @@
 
     function generateFractionProblem() {
       if (gameState.dungeonVictory) return;
+      updateSpecialButtonUI();
 
       const isD2 = gameState.currentDungeon === 2;
       const isD3 = gameState.currentDungeon === 3;
