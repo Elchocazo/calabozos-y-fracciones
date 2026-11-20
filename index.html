@@ -1020,9 +1020,13 @@
 
           <div class="stage-monster-bar">
             <div id="ui-monster-name" class="stage-monster-name">Goblin Perezoso</div>
-            <div class="bar-wrap" style="height:13px;">
+            <div class="bar-wrap" style="height:13px; margin-bottom:4px;">
               <div id="ui-monster-hp-fill" class="bar-fill bar-hp" style="width:100%;"></div>
               <div id="ui-monster-hp-text" class="bar-label">50 / 50</div>
+            </div>
+            <div class="bar-wrap" style="height:8px; background:#1c1428; border-color:#4c356b;" title="Tiempo antes del ataque enemigo">
+              <div id="ui-monster-atk-fill" class="bar-fill" style="width:0%; background:linear-gradient(90deg,#f59e0b,#ef4444); transition:width 0.1s linear;"></div>
+              <div id="ui-monster-atk-label" class="bar-label" style="font-size:7px;">⚡ Ataque</div>
             </div>
           </div>
 
@@ -1141,35 +1145,35 @@
 
     const RPG_ITEMS = {
       // Comunes
-      dagaChueca: { id: 'dagaChueca', name: 'Daga Chueca', type: 'weapon', rarity: 'common', cost: 45, damageBonus: 2, description: 'Un poco torcida, pero afilada.' },
+      dagaChueca: { id: 'dagaChueca', name: 'Dagas Chuecas (2M)', type: 'weapon', hands: 2, rarity: 'common', cost: 45, damageBonus: 3, description: 'Par de dagas a 2 manos. Ocupan ambas manos (sin escudo).' },
       sandaliasRotas: { id: 'sandaliasRotas', name: 'Sandalias Rotas', type: 'boots', rarity: 'common', cost: 35, defenseBonus: 1, description: 'Mejor que andar descalzo.' },
       amuletoPegajoso: { id: 'amuletoPegajoso', name: 'Amuleto Pegajoso', type: 'amulet', rarity: 'common', cost: 40, hpBonus: 1, description: 'Se siente pegajoso, pero protege.' },
       // Tienda base
       cascoCuero: { id: 'cascoCuero', name: 'Casco de Cuero', type: 'helmet', rarity: 'uncommon', cost: 75, defenseBonus: 2, description: 'Protección clásica de aventurero.' },
-      escudoMadera: { id: 'escudoMadera', name: 'Escudo de Madera', type: 'shield', rarity: 'uncommon', cost: 60, defenseBonus: 2, description: 'Absorbe un error antes de romperse.' },
-      espadaOxidada: { id: 'espadaOxidada', name: 'Espada Oxidada', type: 'weapon', rarity: 'uncommon', cost: 90, damageBonus: 4, description: 'Vieja pero contundente.' },
+      escudoMadera: { id: 'escudoMadera', name: 'Escudo de Madera', type: 'shield', rarity: 'uncommon', cost: 60, defenseBonus: 3, description: '1 mano. Bloquea ataques y absorbe 1 error.' },
+      espadaOxidada: { id: 'espadaOxidada', name: 'Espada Oxidada (1M)', type: 'weapon', hands: 1, rarity: 'uncommon', cost: 90, damageBonus: 4, description: 'Espada de 1 mano, compatible con escudo.' },
       armaduraCuero: { id: 'armaduraCuero', name: 'Armadura de Cuero', type: 'armor', rarity: 'uncommon', cost: 80, defenseBonus: 3, description: 'Resistente y ligera.' },
       capaViajero: { id: 'capaViajero', name: 'Capa del Viajero', type: 'cape', rarity: 'common', cost: 55, defenseBonus: 1, xpBonus: 0.05, description: 'Ondeante capa azul de aventurero (+5% XP).' },
       capaReal: { id: 'capaReal', name: 'Capa Real Carmesí', type: 'cape', rarity: 'epic', cost: 140, defenseBonus: 3, damageBonus: 2, description: 'Capa real con borde de oro puro.' },
       // Poco Comunes (Loot)
       botasCueroMord: { id: 'botasCueroMord', name: 'Botas Mordisqueadas', type: 'boots', rarity: 'uncommon', damageBonus: 0, defenseBonus: 2, description: 'Tienen carácter goblin.' },
-      dagaPicaro: { id: 'dagaPicaro', name: 'Daga de Pícaro', type: 'weapon', rarity: 'uncommon', damageBonus: 3, description: 'Perfecta para ataques rápidos.' },
-      aguijonDuende: { id: 'aguijonDuende', name: 'Aguijón de Duende', type: 'weapon', rarity: 'uncommon', damageBonus: 3, description: 'Rápida y molesta.' },
+      dagaPicaro: { id: 'dagaPicaro', name: 'Dagas de Pícaro (2M)', type: 'weapon', hands: 2, rarity: 'uncommon', damageBonus: 5, description: 'Dagas gemelas a 2 manos. Alto daño, sin escudo.' },
+      aguijonDuende: { id: 'aguijonDuende', name: 'Aguijón Duende (1M)', type: 'weapon', hands: 1, rarity: 'uncommon', damageBonus: 3, description: 'Rápida de 1 mano, compatible con escudo.' },
       sandaliasHojas: { id: 'sandaliasHojas', name: 'Sandalias de Hojas', type: 'boots', rarity: 'uncommon', defenseBonus: 2, description: 'Te conectan con el bosque.' },
       // Raros
       fragmentoGolem: { id: 'fragmentoGolem', name: 'Fragmento de Golem', type: 'amulet', rarity: 'rare', defenseBonus: 3, damageBonus: 1, description: '¡Duro como una piedra!' },
       togaMagoGoblin: { id: 'togaMagoGoblin', name: 'Toga de Mago Goblin', type: 'armor', rarity: 'rare', xpBonus: 0.15, defenseBonus: 2, description: 'Te hace más sabio (+15% XP).' },
-      hojaAfilada: { id: 'hojaAfilada', name: 'Hoja Afilada', type: 'weapon', rarity: 'rare', damageBonus: 5, description: 'Corte limpio y preciso.' },
+      hojaAfilada: { id: 'hojaAfilada', name: 'Hoja Afilada (1M)', type: 'weapon', hands: 1, rarity: 'rare', damageBonus: 5, description: 'Corte preciso de 1 mano, permite escudo.' },
       botasMusgo: { id: 'botasMusgo', name: 'Botas de Musgo', type: 'boots', rarity: 'rare', defenseBonus: 3, description: 'Suaves y resistentes.' },
       // Épicos
       brocheRey: { id: 'brocheRey', name: 'Broche del Rey Grasiento', type: 'helmet', rarity: 'epic', defenseBonus: 5, description: 'Reliquia del Rey Panza.' },
-      cetroRey: { id: 'cetroRey', name: 'Cetro de Mando Grasiento', type: 'weapon', rarity: 'epic', damageBonus: 6, description: 'El arma de un rey glotón.' },
+      cetroRey: { id: 'cetroRey', name: 'Cetro Real (2M)', type: 'weapon', hands: 2, rarity: 'epic', damageBonus: 8, description: 'Cetro pesado a 2 manos del Rey Panza.' },
       cinturonRey: { id: 'cinturonRey', name: 'Cinturón del Rey', type: 'amulet', rarity: 'epic', damageBonus: 2, defenseBonus: 3, description: 'Ha visto muchas batallas.' },
       capaEsporas: { id: 'capaEsporas', name: 'Capa de Esporas', type: 'cape', rarity: 'epic', defenseBonus: 4, description: 'Capa mágica que libera esporas brillantes.' },
       flautaEncantada: { id: 'flautaEncantada', name: 'Flauta Encantada', type: 'amulet', rarity: 'epic', xpBonus: 0.25, description: 'Acelera tu aprendizaje (+25% XP).' },
       // Legendarios
       plumaRogelio: { id: 'plumaRogelio', name: 'Pluma de Rogelio', type: 'amulet', rarity: 'legendary', damageBonus: 4, description: 'Irradia poder mágico.' },
-      garraAfilada: { id: 'garraAfilada', name: 'Garra Afilada', type: 'weapon', rarity: 'legendary', damageBonus: 9, description: 'Trofeo del clan Psitacus.' },
+      garraAfilada: { id: 'garraAfilada', name: 'Garras Gemelas (2M)', type: 'weapon', hands: 2, rarity: 'legendary', damageBonus: 11, description: 'Garras legendarias a 2 manos del clan Psitacus.' },
       crestaPsitacus: { id: 'crestaPsitacus', name: 'Cresta Psitacus', type: 'helmet', rarity: 'legendary', defenseBonus: 8, description: 'Símbolo supremo de poder.' }
     };
 
@@ -1199,15 +1203,18 @@
         bgTop: '#1c1426',
         floorColor: '#2d2036',
         monsters: [
-          { name: 'Goblin Perezoso', style: 'goblin_lazy', color: '#4ade80', accent: '#166534', baseHp: 35, loot: [{ id: 'sandaliasRotas', chance: 0.4 }] },
-          { name: 'Goblin Lanza Mocos', style: 'goblin_snot', color: '#84cc16', accent: '#3f6212', baseHp: 45, loot: [{ id: 'dagaChueca', chance: 0.45 }] },
-          { name: 'El Muerde Tobillos', style: 'goblin_ankle', color: '#22c55e', accent: '#14532d', baseHp: 55, loot: [{ id: 'botasCueroMord', chance: 0.45 }] },
-          { name: 'El Pícaro', style: 'goblin_rogue', color: '#10b981', accent: '#312e81', baseHp: 65, loot: [{ id: 'dagaPicaro', chance: 0.5 }] },
-          { name: 'Guardia Élite Golem', style: 'golem_rock', color: '#94a3b8', accent: '#475569', baseHp: 85, loot: [{ id: 'fragmentoGolem', chance: 0.5 }] },
-          { name: 'Profesor Borborigmo', style: 'goblin_mage', color: '#4ade80', accent: '#6b21a8', baseHp: 100, loot: [{ id: 'togaMagoGoblin', chance: 0.55 }] },
+          { name: 'Goblin Perezoso', style: 'goblin_lazy', scale: 0.90, atkInterval: 18, atkPower: 2, color: '#4ade80', accent: '#166534', baseHp: 35, loot: [{ id: 'sandaliasRotas', chance: 0.4 }] },
+          { name: 'Goblin Lanza Mocos', style: 'goblin_snot', scale: 1.00, atkInterval: 16, atkPower: 3, projectile: '#a3e635', color: '#84cc16', accent: '#3f6212', baseHp: 45, loot: [{ id: 'dagaChueca', chance: 0.45 }] },
+          { name: 'El Muerde Tobillos', style: 'goblin_ankle', scale: 0.78, atkInterval: 13, atkPower: 3, color: '#22c55e', accent: '#14532d', baseHp: 55, loot: [{ id: 'botasCueroMord', chance: 0.45 }] },
+          { name: 'El Pícaro', style: 'goblin_rogue', scale: 0.96, atkInterval: 13, atkPower: 4, color: '#10b981', accent: '#312e81', baseHp: 65, loot: [{ id: 'dagaPicaro', chance: 0.5 }] },
+          { name: 'Guardia Élite Golem', style: 'golem_rock', scale: 1.38, atkInterval: 17, atkPower: 6, color: '#94a3b8', accent: '#475569', baseHp: 85, loot: [{ id: 'fragmentoGolem', chance: 0.5 }] },
+          { name: 'Profesor Borborigmo', style: 'goblin_mage', scale: 1.12, atkInterval: 15, atkPower: 6, projectile: '#c084fc', color: '#4ade80', accent: '#6b21a8', baseHp: 100, loot: [{ id: 'togaMagoGoblin', chance: 0.55 }] },
           {
             name: 'Rey "Panza"',
             style: 'boss_king',
+            scale: 1.58,
+            atkInterval: 15,
+            atkPower: 9,
             color: '#65a30d',
             accent: '#b91c1c',
             baseHp: 140,
@@ -1223,15 +1230,19 @@
         bgTop: '#10201c',
         floorColor: '#1b332a',
         monsters: [
-          { name: 'Duendecillo Bravucón', style: 'mosquito_duende', color: '#a855f7', accent: '#38bdf8', baseHp: 60, loot: [{ id: 'aguijonDuende', chance: 0.45 }] },
-          { name: 'Ensalada que Muerde', style: 'plant_bite', color: '#22c55e', accent: '#ef4444', baseHp: 75, loot: [{ id: 'sandaliasHojas', chance: 0.45 }] },
-          { name: 'Champiñón Chismoso', style: 'mushroom_gossip', color: '#f43f5e', accent: '#fef3c7', baseHp: 90, loot: [{ id: 'capaEsporas', chance: 0.5 }] },
-          { name: 'Montaña de Pasto', style: 'golem_moss', color: '#65a30d', accent: '#365314', baseHp: 115, loot: [{ id: 'botasMusgo', chance: 0.5 }] },
-          { name: 'El DJ del Bosque', style: 'goat_dj', color: '#e2e8f0', accent: '#ec4899', baseHp: 130, loot: [{ id: 'flautaEncantada', chance: 0.55 }] },
-          { name: 'Mamá de los Árboles', style: 'tree_mom', color: '#78350f', accent: '#10b981', baseHp: 150, loot: [{ id: 'hojaAfilada', chance: 0.6 }] },
+          { name: 'Duendecillo Bravucón', style: 'mosquito_duende', scale: 0.82, atkInterval: 13, atkPower: 4, color: '#a855f7', accent: '#38bdf8', baseHp: 60, loot: [{ id: 'aguijonDuende', chance: 0.45 }] },
+          { name: 'Ensalada que Muerde', style: 'plant_bite', scale: 1.18, atkInterval: 15, atkPower: 5, color: '#22c55e', accent: '#ef4444', baseHp: 75, loot: [{ id: 'sandaliasHojas', chance: 0.45 }] },
+          { name: 'Champiñón Chismoso', style: 'mushroom_gossip', scale: 0.94, atkInterval: 14, atkPower: 5, projectile: '#f472b6', color: '#f43f5e', accent: '#fef3c7', baseHp: 90, loot: [{ id: 'capaEsporas', chance: 0.5 }] },
+          { name: 'Montaña de Pasto', style: 'golem_moss', scale: 1.44, atkInterval: 17, atkPower: 7, color: '#65a30d', accent: '#365314', baseHp: 115, loot: [{ id: 'botasMusgo', chance: 0.5 }] },
+          { name: 'El DJ del Bosque', style: 'goat_dj', scale: 1.08, atkInterval: 14, atkPower: 7, projectile: '#38f8d4', color: '#e2e8f0', accent: '#ec4899', baseHp: 130, loot: [{ id: 'flautaEncantada', chance: 0.55 }] },
+          { name: 'Mamá de los Árboles', style: 'tree_mom', scale: 1.48, atkInterval: 16, atkPower: 8, projectile: '#4ade80', color: '#78350f', accent: '#10b981', baseHp: 150, loot: [{ id: 'hojaAfilada', chance: 0.6 }] },
           {
             name: 'Rogelio, Clan Psitacus',
             style: 'boss_rogelio',
+            scale: 1.56,
+            atkInterval: 14,
+            atkPower: 11,
+            projectile: '#fde047',
             color: '#fef08a',
             accent: '#f97316',
             baseHp: 190,
@@ -1327,11 +1338,121 @@
 
     // HUD Hearts con animación de rotura (Heart Break)
     let hudHearts = [];
+    let enemyAttackTimer = 0;
+    const enemyProjectiles = [];
+    let roomVariant = 0;
+    const roomTransition = {
+      active: false,
+      phase: 'none', // 'walk_out' | 'fade_out' | 'fade_in' | 'walk_in'
+      fadeAlpha: 0,
+      onSwapRoom: null,
+      onFinish: null
+    };
+
+    function isAnyModalOpen() {
+      return ['modal-generic', 'modal-shop', 'modal-inventory', 'modal-achievements'].some(id => {
+        const el = document.getElementById(id);
+        return el && !el.classList.contains('hidden');
+      });
+    }
+
+    function startRoomTransition(onSwapRoom, onFinish) {
+      roomTransition.active = true;
+      roomTransition.phase = 'walk_out';
+      roomTransition.fadeAlpha = 0;
+      roomTransition.onSwapRoom = onSwapRoom;
+      roomTransition.onFinish = onFinish;
+      heroActor.facing = 1;
+      heroActor.attackState = 'idle';
+      enemyAttackTimer = 0;
+      enemyProjectiles.length = 0;
+    }
+
+    function executeEnemyTimedAttack() {
+      const mDef = getCurrentMonsterDef();
+      if (!mDef || !monsterActor.visible) return;
+      enemyAttackTimer = 0;
+
+      const finishHit = () => {
+        const stats = getPlayerStats();
+        const atkPow = mDef.atkPower || 3;
+
+        // Equilibrio justo: si tu Defensa iguala o supera el poder de ataque enemigo, ¡BLOQUEAS!
+        if (stats.def >= atkPow) {
+          screenShake = 3;
+          floatingTexts.push({ x: heroActor.x - 6, y: heroActor.y - 30, vy: -0.8, text: '🛡️ BLOQUEADO', color: '#38bdf8', life: 0.9, maxLife: 0.9 });
+          for (let i = 0; i < 8; i++) {
+            particles.push({
+              x: heroActor.x + 12, y: heroActor.y - 12,
+              vx: (Math.random() - 0.5) * 3, vy: (Math.random() - 0.5) * 3,
+              color: '#38bdf8', size: 2, gravity: 0.1, life: 0.35
+            });
+          }
+          return;
+        }
+
+        // Si no bloqueas: enemigos normales quitan 0.5 corazones; jefes 1 corazón (o 0.5 si tienes buena defensa)
+        const dmgHearts = (mDef.isBoss && stats.def < Math.floor(atkPow / 2)) ? 1 : 0.5;
+        gameState.player.lives = Math.max(0, Math.round((gameState.player.lives - dmgHearts) * 2) / 2);
+        gameState.player.lostLifeThisRun = true;
+
+        playHeroTakeDamageSequence(dmgHearts >= 1);
+        syncHudHearts();
+        updateSidebarUI();
+
+        floatingTexts.push({ x: heroActor.x - 4, y: heroActor.y - 32, vy: -0.9, text: `-${dmgHearts} ❤️`, color: '#fb7185', life: 0.9, maxLife: 0.9 });
+
+        if (gameState.mode === 'challenge' && gameState.currentChallenge === 2) {
+          stopChallengeTimer();
+          showGenericModal('🛡️ Desafío Fallido', 'El enemigo te golpeó durante <strong>Defensa Perfecta</strong>. ¡Sube tu defensa o responde más rápido!', () => {
+            gameState.player.lives = gameState.player.maxLives;
+            showChallengesScreen();
+          });
+          return;
+        }
+
+        if (gameState.player.lives <= 0) {
+          stopChallengeTimer();
+          setTimeout(() => {
+            showGenericModal(
+              '💀 ¡Derrotado en Combate!',
+              `El enemigo te venció, pero acumulaste <strong>${gameState.player.coins} monedas</strong>.<br>Tip: Equipa armadura o escudo para bloquear ataques enemigos.`,
+              () => {
+                gameState.player.lives = gameState.player.maxLives;
+                if (gameState.mode === 'infinite') showInfiniteScreen();
+                else if (gameState.mode === 'challenge') showChallengesScreen();
+                else showDungeonScreen();
+              }
+            );
+          }, 500);
+        }
+      };
+
+      // Si el enemigo dispara proyectil mágico/moco/espora
+      if (mDef.projectile) {
+        monsterActor.squashX = 1.28;
+        monsterActor.squashY = 0.78;
+        enemyProjectiles.push({
+          x: monsterActor.x,
+          y: monsterActor.y - 14,
+          vx: -175,
+          color: mDef.projectile,
+          onHit: finishHit
+        });
+      } else {
+        // Ataque cuerpo a cuerpo (embestida)
+        monsterActor.isAttacking = true;
+        monsterActor.attackProgress = 0;
+        setTimeout(finishHit, 160);
+      }
+    }
 
     function syncHudHearts() {
       hudHearts = [];
       for (let i = 0; i < gameState.player.maxLives; i++) {
-        hudHearts.push({ broken: i >= gameState.player.lives, breakAnim: null });
+        const rem = gameState.player.lives - i;
+        const state = rem >= 1 ? 'full' : (rem >= 0.5 ? 'half' : 'empty');
+        hudHearts.push({ state, broken: state === 'empty', breakAnim: null });
       }
     }
 
@@ -1339,6 +1460,7 @@
       for (let i = hudHearts.length - 1; i >= 0; i--) {
         if (!hudHearts[i].broken) {
           hudHearts[i].broken = true;
+          hudHearts[i].state = 'empty';
           hudHearts[i].breakAnim = {
             shakeTimer: 0.15,
             left: { x: 0, y: 0, vx: -1.3, vy: -2.6, rot: 0, vrot: -0.1, alpha: 1 },
@@ -1537,7 +1659,7 @@
     }
 
     // ----- Secuencia de Daño al Héroe (Taking Damage Pack) -----
-    function playHeroTakeDamageSequence() {
+    function playHeroTakeDamageSequence(breakFullHeart = true) {
       monsterActor.isAttacking = true;
       monsterActor.attackProgress = 0;
 
@@ -1550,7 +1672,7 @@
       // 3. Red Vignette 0.5s
       vignetteTimer = 0.5;
       // 4. Heart Break
-      triggerHeartBreakFX();
+      if (breakFullHeart) triggerHeartBreakFX();
       // 5. Red Tint 0.3s
       heroActor.redTintTimer = 0.3;
       // 6. Color Split 14px + 4px shake
@@ -1599,7 +1721,7 @@
       if (item) {
         gameState.player.backpack.push(item.id);
         if (equipNow) {
-          gameState.player.equipped[item.type] = item.id;
+          equipItemWithRules(item.id);
           floatingTexts.push({ x: heroActor.x, y: heroActor.y - 32, vy: -0.9, text: '¡EQUIPADO!', color: '#38f8d4', life: 0.9, maxLife: 0.9 });
         }
         updateSidebarUI();
@@ -1729,6 +1851,71 @@
     function updateCanvas(dt) {
       frameCount++;
       if (hitStopFrames > 0) { hitStopFrames--; return; }
+
+      // --- TRANSICIÓN DE HABITACIÓN (EL HÉROE RECORRE EL STAGE Y ENTRA A OTRA SALA) ---
+      if (roomTransition.active) {
+        if (roomTransition.phase === 'walk_out') {
+          heroActor.x += dt * 135;
+          heroActor.walkTimer += dt * 16;
+          if (heroActor.x > W + 18) {
+            roomTransition.phase = 'fade_out';
+          }
+        } else if (roomTransition.phase === 'fade_out') {
+          roomTransition.fadeAlpha = Math.min(1, roomTransition.fadeAlpha + dt * 3.8);
+          if (roomTransition.fadeAlpha >= 1) {
+            roomVariant++;
+            heroActor.x = -18;
+            monsterActor.x = W + 28;
+            if (roomTransition.onSwapRoom) roomTransition.onSwapRoom();
+            roomTransition.phase = 'fade_in';
+          }
+        } else if (roomTransition.phase === 'fade_in') {
+          roomTransition.fadeAlpha = Math.max(0, roomTransition.fadeAlpha - dt * 3.8);
+          heroActor.x += (heroActor.baseX - heroActor.x) * Math.min(1, dt * 6);
+          heroActor.walkTimer += dt * 14;
+          monsterActor.x += (monsterActor.baseX - monsterActor.x) * Math.min(1, dt * 6);
+          if (roomTransition.fadeAlpha <= 0 && Math.abs(heroActor.x - heroActor.baseX) < 3) {
+            heroActor.x = heroActor.baseX;
+            monsterActor.x = monsterActor.baseX;
+            heroActor.walkTimer = 0;
+            roomTransition.active = false;
+            roomTransition.phase = 'none';
+            if (roomTransition.onFinish) roomTransition.onFinish();
+          }
+        }
+        return;
+      }
+
+      // --- TEMPORIZADOR DE ATAQUE DEL ENEMIGO (PAUSADO EN MODALES/COFRE/VICTORIA) ---
+      const mDef = getCurrentMonsterDef();
+      const canEnemyCharge = mDef && monsterActor.visible && !gameState.waitingChest && !gameState.dungeonVictory && !isAnyModalOpen() && gameState.player.lives > 0;
+      const atkBarEl = document.getElementById('ui-monster-atk-fill');
+      const atkLblEl = document.getElementById('ui-monster-atk-label');
+      if (canEnemyCharge) {
+        const interval = mDef.atkInterval || 15;
+        enemyAttackTimer += dt;
+        const pct = Math.min(100, (enemyAttackTimer / interval) * 100);
+        if (atkBarEl) atkBarEl.style.width = `${pct}%`;
+        if (atkLblEl) {
+          const left = Math.max(0, Math.ceil(interval - enemyAttackTimer));
+          atkLblEl.textContent = `⚡ Ataque (${left}s) • Pod:${mDef.atkPower || 3}`;
+        }
+        if (enemyAttackTimer >= interval) {
+          executeEnemyTimedAttack();
+        }
+      } else if (atkBarEl) {
+        atkBarEl.style.width = '0%';
+      }
+
+      // Proyectiles enemigos volando hacia el héroe
+      for (let i = enemyProjectiles.length - 1; i >= 0; i--) {
+        const pr = enemyProjectiles[i];
+        pr.x += pr.vx * dt;
+        if (pr.x <= heroActor.x + 14) {
+          if (pr.onHit) pr.onHit();
+          enemyProjectiles.splice(i, 1);
+        }
+      }
 
       // Héroe: Anticipación de salto
       if (heroActor.isAnticipating) {
@@ -2060,7 +2247,7 @@
         targetCtx.fillRect(ox + 1, oy + 9, 2, 2);
       }
 
-      // 7. ESCUDO ÚNICO (en mano trasera/lateral)
+      // 7. ESCUDO O ARMA EN SEGUNDA MANO (si usa dagas/garras a 2 manos)
       if (eq.shield === 'escudoMadera') {
         targetCtx.fillStyle = '#78350f';
         targetCtx.fillRect(ox, oy + 13, 5, 7);
@@ -2069,6 +2256,26 @@
         targetCtx.fillRect(ox, oy + 19, 5, 1);
         targetCtx.fillStyle = '#fbbf24';
         targetCtx.fillRect(ox + 2, oy + 15, 2, 3);
+      } else if (eq.weapon === 'dagaChueca') {
+        // Segunda daga chueca en la mano izquierda
+        targetCtx.fillStyle = '#94a3b8';
+        targetCtx.fillRect(ox - 2, oy + 11, 2, 5);
+        targetCtx.fillRect(ox - 3, oy + 9, 2, 3);
+        targetCtx.fillStyle = '#78350f'; targetCtx.fillRect(ox - 2, oy + 15, 4, 2);
+      } else if (eq.weapon === 'dagaPicaro') {
+        // Segunda daga de pícaro en la mano izquierda
+        targetCtx.fillStyle = '#312e81';
+        targetCtx.fillRect(ox - 2, oy + 9, 2, 7);
+        targetCtx.fillStyle = '#c084fc';
+        targetCtx.fillRect(ox - 3, oy + 8, 2, 6);
+        targetCtx.fillStyle = '#fbbf24'; targetCtx.fillRect(ox - 2, oy + 15, 4, 2);
+      } else if (eq.weapon === 'garraAfilada') {
+        // Segunda garra legendaria en la mano izquierda
+        targetCtx.fillStyle = '#f8fafc';
+        targetCtx.fillRect(ox - 4, oy + 12, 5, 2);
+        targetCtx.fillRect(ox - 5, oy + 15, 5, 2);
+        targetCtx.fillStyle = '#fbbf24';
+        targetCtx.fillRect(ox, oy + 12, 2, 5);
       }
 
       // 8. PIERNAS Y BOTAS ÚNICAS
@@ -2173,10 +2380,11 @@
       const idleSquash = 1 + Math.sin(t) * 0.06;
       const flash = monsterActor.whiteFlashFrames > 0;
       const c = (hex) => (flash ? '#ffffff' : hex);
+      const sz = mDef.scale || 1;
 
       ctx.save();
       ctx.translate(mx + monsterActor.w / 2, my);
-      ctx.scale(monsterActor.squashX, monsterActor.squashY * idleSquash);
+      ctx.scale(monsterActor.squashX * sz, monsterActor.squashY * idleSquash * sz);
 
       // Sombra en el suelo
       const shadowW = mDef.isBoss ? 19 : 13;
@@ -3045,6 +3253,19 @@
         ctx.fillStyle = '#fef08a'; ctx.fillRect(c.x - 1, c.y - 2, 2, 4);
       });
 
+      // Proyectiles enemigos volando
+      enemyProjectiles.forEach(pr => {
+        ctx.save();
+        ctx.fillStyle = pr.color;
+        ctx.beginPath(); ctx.arc(pr.x, pr.y, 4, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(pr.x - 1, pr.y - 1, 2, 2);
+        ctx.globalAlpha = 0.45;
+        ctx.fillStyle = pr.color;
+        ctx.fillRect(pr.x + 4, pr.y - 2, 6, 4);
+        ctx.restore();
+      });
+
       // Partículas & Sparkles
       particles.forEach(p => {
         ctx.fillStyle = p.color;
@@ -3075,14 +3296,14 @@
         ctx.restore();
       });
 
-      // HUD en Canvas: Corazones + Monedas
+      // HUD en Canvas: Corazones (enteros y medios) + Monedas
       hudHearts.forEach((h, idx) => {
         const hx = 12 + idx * 14, hy = 12;
         if (!h.broken) {
-          drawPixelHeart(hx, hy);
+          drawPixelHeart(hx, hy, h.state || 'full');
         } else if (h.breakAnim) {
           const a = h.breakAnim;
-          if (a.shakeTimer > 0) drawPixelHeart(hx + (Math.random() - 0.5) * 4, hy);
+          if (a.shakeTimer > 0) drawPixelHeart(hx + (Math.random() - 0.5) * 4, hy, 'full');
           else {
             drawHalfHeart(hx + a.left.x, hy + a.left.y, false, a.left);
             drawHalfHeart(hx + a.right.x, hy + a.right.y, true, a.right);
@@ -3129,13 +3350,40 @@
         });
       }
 
+      // Indicador "AVANZAR →" y transición de habitación (fade)
+      if (roomTransition.active) {
+        if (roomTransition.phase === 'walk_out') {
+          ctx.save();
+          ctx.fillStyle = 'rgba(15, 10, 26, 0.72)';
+          ctx.fillRect(W - 92, 62, 82, 18);
+          ctx.font = 'bold 9px monospace';
+          ctx.fillStyle = '#fde047';
+          ctx.fillText('SIGUIENTE SALA →', W - 88, 74);
+          ctx.restore();
+        }
+        if (roomTransition.fadeAlpha > 0) {
+          ctx.fillStyle = `rgba(8, 5, 14, ${roomTransition.fadeAlpha})`;
+          ctx.fillRect(-20, -20, W + 40, H + 40);
+        }
+      }
+
       ctx.restore();
     }
 
-    function drawPixelHeart(x, y) {
-      ctx.fillStyle = '#e84d67';
+    function drawPixelHeart(x, y, state = 'full') {
       const p = [[1,1,0,1,1],[1,1,1,1,1],[1,1,1,1,1],[0,1,1,1,0],[0,0,1,0,0]];
-      for (let r = 0; r < p.length; r++) for (let c = 0; c < p[r].length; c++) if (p[r][c]) ctx.fillRect(x + c * 2, y + r * 2, 2, 2);
+      for (let r = 0; r < p.length; r++) {
+        for (let c = 0; c < p[r].length; c++) {
+          if (!p[r][c]) continue;
+          const isRightHalf = c >= 3 || (c === 2 && r < 2);
+          if (state === 'half' && isRightHalf) {
+            ctx.fillStyle = '#473a59';
+          } else {
+            ctx.fillStyle = '#e84d67';
+          }
+          ctx.fillRect(x + c * 2, y + r * 2, 2, 2);
+        }
+      }
       ctx.fillStyle = '#ffb3c1'; ctx.fillRect(x + 2, y + 2, 2, 2);
     }
 
@@ -4068,6 +4316,7 @@
       gameState.player.coins += coinsGain;
       gameState.player.xp += xpGain;
       gameState.monsterHp -= stats.dmg;
+      enemyAttackTimer *= 0.35; // ¡Tu golpe interrumpe/retrasa el ataque enemigo!
 
       const taunts = mDef.taunts || DEFAULT_HIT_TAUNTS;
       showMonsterTaunt(taunts[Math.floor(Math.random() * taunts.length)]);
@@ -4120,24 +4369,30 @@
       gameState.player.defeatedTotal++;
       gameState.player.defeatedThisRun++;
 
-      // Modo Infinito: récord y oleada infinita
+      // Modo Infinito: récord y oleada infinita con transición de habitación
       if (gameState.mode === 'infinite') {
         if (gameState.player.defeatedThisRun > gameState.infiniteBest) {
           gameState.infiniteBest = gameState.player.defeatedThisRun;
           localStorage.setItem('cyf_infinite_best', String(gameState.infiniteBest));
         }
-        gameState.monsterIndex++;
-        gameState.infiniteWave++;
-        const nextM = getCurrentMonsterDef();
-        const scaledHp = Math.round(nextM.baseHp * (1 + (gameState.infiniteWave - 1) * 0.22));
-        gameState.monsterHp = scaledHp;
-        gameState.monsterMaxHp = scaledHp;
-        monsterActor.visible = true;
-        monsterActor.squashX = 1.25;
-        monsterActor.squashY = 0.75;
-        updateSidebarUI();
-        gameState.attackLocked = false;
-        generateFractionProblem();
+        monsterActor.visible = false;
+        startRoomTransition(
+          () => {
+            gameState.monsterIndex++;
+            gameState.infiniteWave++;
+            const nextM = getCurrentMonsterDef();
+            const scaledHp = Math.round(nextM.baseHp * (1 + (gameState.infiniteWave - 1) * 0.22));
+            gameState.monsterHp = scaledHp;
+            gameState.monsterMaxHp = scaledHp;
+            monsterActor.visible = true;
+            updateSidebarUI();
+          },
+          () => {
+            floatingTexts.push({ x: W / 2 - 28, y: 54, vy: -0.4, text: `OLEADA ${gameState.infiniteWave}`, color: '#c084fc', life: 1.2, maxLife: 1.2 });
+            gameState.attackLocked = false;
+            generateFractionProblem();
+          }
+        );
         return;
       }
 
@@ -4154,10 +4409,9 @@
       }
 
       const dung = DUNGEONS[gameState.currentDungeon];
-      gameState.monsterIndex++;
-
-      if (gameState.monsterIndex >= dung.monsters.length) {
+      if (gameState.monsterIndex + 1 >= dung.monsters.length) {
         // ¡Mazmorra Completada!
+        gameState.monsterIndex++;
         gameState.dungeonVictory = true;
         gameState.dungeonsCompleted[gameState.currentDungeon] = true;
         monsterActor.visible = false;
@@ -4169,15 +4423,23 @@
           <button class="btn-retro btn-gold" onclick="showDungeonScreen()"><i class="fas fa-map"></i> Volver al Mapa de Mazmorras</button>
         `;
       } else {
-        const nextM = dung.monsters[gameState.monsterIndex];
-        gameState.monsterHp = nextM.baseHp;
-        gameState.monsterMaxHp = nextM.baseHp;
-        monsterActor.visible = true;
-        monsterActor.squashX = 1.25;
-        monsterActor.squashY = 0.75;
-        updateSidebarUI();
-        gameState.attackLocked = false;
-        generateFractionProblem();
+        // El héroe recorre el stage hacia la derecha y pasa a la siguiente habitación
+        monsterActor.visible = false;
+        startRoomTransition(
+          () => {
+            gameState.monsterIndex++;
+            const nextM = dung.monsters[gameState.monsterIndex];
+            gameState.monsterHp = nextM.baseHp;
+            gameState.monsterMaxHp = nextM.baseHp;
+            monsterActor.visible = true;
+            updateSidebarUI();
+          },
+          () => {
+            floatingTexts.push({ x: W / 2 - 26, y: 54, vy: -0.4, text: `SALA ${gameState.monsterIndex + 1} / ${dung.monsters.length}`, color: '#fde047', life: 1.2, maxLife: 1.2 });
+            gameState.attackLocked = false;
+            generateFractionProblem();
+          }
+        );
       }
     }
 
@@ -4387,6 +4649,21 @@
       drawPixelHero(ictx, 9, 10, avDef, 'normal', 1, false, 0, eq);
     }
 
+    function equipItemWithRules(itemId) {
+      const it = RPG_ITEMS[itemId];
+      if (!it) return;
+      const eq = gameState.player.equipped;
+      // Si equipas arma a 2 manos, ocupa ambas manos y desequipa el escudo automáticamente
+      if (it.type === 'weapon' && it.hands === 2 && eq.shield) {
+        eq.shield = null;
+      }
+      // Si equipas escudo mientras llevas arma a 2 manos, desequipa el arma a 2 manos
+      if (it.type === 'shield' && eq.weapon && RPG_ITEMS[eq.weapon]?.hands === 2) {
+        eq.weapon = null;
+      }
+      eq[it.type] = itemId;
+    }
+
     function openInventoryModal() {
       const stats = getPlayerStats();
       document.getElementById('inv-hero-name').textContent = gameState.player.name;
@@ -4397,7 +4674,10 @@
         <span style="color:#34d399;">✨ +${Math.round((stats.xpMult - 1) * 100)}% XP</span>
       `;
 
-      // Renderizar las 6 ranuras de equipo RPG
+      const equippedWeapon = gameState.player.equipped.weapon ? RPG_ITEMS[gameState.player.equipped.weapon] : null;
+      const isTwoHanded = equippedWeapon && equippedWeapon.hands === 2;
+
+      // Renderizar las 7 ranuras de equipo RPG
       Object.keys(SLOT_META).forEach(type => {
         const box = document.getElementById(`slot-${type}`);
         if (!box) return;
@@ -4405,7 +4685,17 @@
         const eqId = gameState.player.equipped[type];
         const it = eqId ? RPG_ITEMS[eqId] : null;
 
-        if (it) {
+        if (type === 'shield' && isTwoHanded) {
+          box.classList.remove('filled');
+          box.style.opacity = '0.55';
+          box.innerHTML = `
+            <div class="equip-slot-icon" style="opacity:0.4;">⚔️</div>
+            <div class="equip-slot-label" style="color:#fb923c;">2 MANOS</div>
+            <div style="font-size:8px; color:#9e93b3;">Ocupada</div>
+          `;
+          box.onclick = null;
+        } else if (it) {
+          box.style.opacity = '1';
           box.classList.add('filled');
           box.innerHTML = `
             <div class="equip-slot-icon">${meta.icon}</div>
@@ -4417,6 +4707,7 @@
             openInventoryModal();
           };
         } else {
+          box.style.opacity = '1';
           box.classList.remove('filled');
           box.innerHTML = `
             <div class="equip-slot-icon" style="opacity:0.35;">${meta.icon}</div>
@@ -4442,6 +4733,7 @@
           const isEq = gameState.player.equipped[it.type] === id;
           const div = document.createElement('div');
           div.className = `rpg-slot ${isEq ? 'equipped' : ''}`;
+          const handsTag = it.hands ? ` • ${it.hands}M` : '';
           const bonusTxt = [
             it.damageBonus ? `+${it.damageBonus} Daño` : '',
             it.defenseBonus ? `+${it.defenseBonus} Def` : '',
@@ -4450,12 +4742,16 @@
 
           div.innerHTML = `
             <div class="rarity-${it.rarity}" style="font-weight:800; font-size:12px;">${meta.icon} ${it.name}</div>
-            <div style="font-size:10px; color:#9e93b3;">${meta.label.toUpperCase()} ${bonusTxt ? '• ' + bonusTxt : ''}</div>
+            <div style="font-size:10px; color:#9e93b3;">${meta.label.toUpperCase()}${handsTag} ${bonusTxt ? '• ' + bonusTxt : ''}</div>
             <div style="font-size:11px; color:#d5cde6;">${it.description}</div>
             <button class="btn-retro ${isEq ? 'btn-danger' : 'btn-success'}" style="padding:6px; font-size:11px;">${isEq ? 'Desequipar' : 'Equipar'}</button>
           `;
           div.querySelector('button').onclick = () => {
-            gameState.player.equipped[it.type] = isEq ? null : id;
+            if (isEq) {
+              gameState.player.equipped[it.type] = null;
+            } else {
+              equipItemWithRules(id);
+            }
             updateSidebarUI();
             openInventoryModal();
           };
@@ -4641,6 +4937,10 @@
       gameState.player.usedPotionThisRun = false;
       gameState.player.lives = gameState.player.maxLives;
       victoryFX.active = false;
+      enemyAttackTimer = 0;
+      enemyProjectiles.length = 0;
+      roomTransition.active = false;
+      roomTransition.fadeAlpha = 0;
 
       const firstM = getCurrentMonsterDef();
       gameState.monsterHp = firstM.baseHp;
