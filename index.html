@@ -903,9 +903,9 @@
         <h2 class="game-title" style="font-size:26px;">Elige tu Mazmorra</h2>
       </div>
 
-      <!-- Gran Mapa Pixel Art con el recorrido del personaje -->
-      <div style="position:relative; width:100%; max-width:1060px; border:3px solid #4c3770; border-radius:14px; overflow:hidden; box-shadow:0 14px 36px rgba(0,0,0,0.75); background:#181d26;">
-        <canvas id="world-map-canvas" width="480" height="210" style="display:block; width:100%; height:auto; image-rendering:pixelated; image-rendering:crisp-edges;"></canvas>
+      <!-- Gran Mapa HD del Reino con el recorrido del personaje -->
+      <div style="position:relative; width:100%; max-width:1060px; border:3px solid #4c3770; border-radius:14px; overflow:hidden; box-shadow:0 14px 36px rgba(0,0,0,0.75); background:#0c2340;">
+        <canvas id="world-map-canvas" width="1440" height="630" style="display:block; width:100%; height:auto;"></canvas>
 
         <!-- Tarjetas de Mazmorras integradas sobre la zona inferior del mapa -->
         <div style="position:relative; background:linear-gradient(to top, rgba(16,11,26,0.96) 70%, rgba(16,11,26,0.72) 100%); border-top:2px solid #3c2c59; padding:14px;">
@@ -3625,7 +3625,7 @@
     // =========================================================================
     const worldMapCanvas = document.getElementById('world-map-canvas');
     const wmCtx = worldMapCanvas.getContext('2d');
-    wmCtx.imageSmoothingEnabled = false;
+    wmCtx.imageSmoothingEnabled = true;
 
     // Puntos clave del recorrido: 0=Aldea, 1=Guarida Goblins, 2=Bosque Encantado, 3=Cripta
     const MAP_PATH_POINTS = [
@@ -3756,6 +3756,11 @@
           return;
         }
       }
+
+      // Escalar a 3x HD (1440x630) para nitidez absoluta de mapa y textos
+      wmCtx.save();
+      wmCtx.scale(3, 3);
+      wmCtx.imageSmoothingEnabled = true;
 
       // 1. OCÉANO PROFUNDO CON DEGRADADO Y OLAS ANIMADAS
       const seaGrad = wmCtx.createLinearGradient(0, 0, 0, mH);
@@ -3980,16 +3985,18 @@
           wmCtx.fillText('★', n.pt.x, n.pt.y - 14);
         }
 
-        wmCtx.font = 'bold 8px monospace';
+        wmCtx.font = '700 8.5px "Segoe UI", system-ui, sans-serif';
         wmCtx.textAlign = 'center';
-        const tw = n.label.length * 5.2 + 10;
-        wmCtx.fillStyle = 'rgba(11, 8, 20, 0.86)';
-        wmCtx.fillRect(n.pt.x - tw / 2, n.pt.y + 10, tw, 12);
+        const tw = wmCtx.measureText(n.label).width + 14;
+        wmCtx.fillStyle = 'rgba(11, 8, 22, 0.90)';
+        wmCtx.beginPath();
+        wmCtx.roundRect(n.pt.x - tw / 2, n.pt.y + 9, tw, 13, 4);
+        wmCtx.fill();
         wmCtx.strokeStyle = n.unlocked ? n.color : '#475569';
         wmCtx.lineWidth = 1;
-        wmCtx.strokeRect(n.pt.x - tw / 2, n.pt.y + 10, tw, 12);
+        wmCtx.stroke();
         wmCtx.fillStyle = n.unlocked ? '#ffffff' : '#94a3b8';
-        wmCtx.fillText(n.label, n.pt.x, n.pt.y + 19);
+        wmCtx.fillText(n.label, n.pt.x, n.pt.y + 18.5);
       });
 
       // 6. HÉROE PIXEL ART CAMINANDO SOBRE EL RECORRIDO
@@ -4007,25 +4014,29 @@
       [0, 1, 2].forEach(cIdx => {
         const cx = ((cIdx * 175 + t * 5) % (mW + 60)) - 30;
         const cy = 18 + cIdx * 12;
-        wmCtx.fillRect(Math.round(cx), cy, 28, 6);
-        wmCtx.fillRect(Math.round(cx) + 6, cy - 3, 16, 4);
+        wmCtx.beginPath();
+        wmCtx.roundRect(cx, cy, 28, 6, 3);
+        wmCtx.roundRect(cx + 6, cy - 3, 16, 4, 2);
+        wmCtx.fill();
       });
 
-      // Rosa de los vientos en la esquina superior izquierda
+      // Rosa de los vientos en la esquina superior izquierda (HD)
       wmCtx.save();
-      wmCtx.translate(22, 22);
-      wmCtx.strokeStyle = 'rgba(251, 191, 36, 0.55)';
-      wmCtx.lineWidth = 1;
+      wmCtx.translate(22, 24);
+      wmCtx.strokeStyle = 'rgba(251, 191, 36, 0.65)';
+      wmCtx.lineWidth = 1.2;
       wmCtx.beginPath(); wmCtx.arc(0, 0, 11, 0, Math.PI * 2); wmCtx.stroke();
       wmCtx.fillStyle = '#fbbf24';
       wmCtx.beginPath(); wmCtx.moveTo(0, -10); wmCtx.lineTo(3, 0); wmCtx.lineTo(-3, 0); wmCtx.fill();
       wmCtx.fillStyle = '#94a3b8';
       wmCtx.beginPath(); wmCtx.moveTo(0, 10); wmCtx.lineTo(3, 0); wmCtx.lineTo(-3, 0); wmCtx.fill();
-      wmCtx.font = 'bold 6px monospace';
+      wmCtx.font = '800 6.5px "Segoe UI", system-ui, sans-serif';
       wmCtx.textAlign = 'center';
       wmCtx.fillStyle = '#fde047';
-      wmCtx.fillText('N', 0, -12);
+      wmCtx.fillText('N', 0, -13);
       wmCtx.restore();
+
+      wmCtx.restore(); // Fin de escala 3x HD
     }
 
     let lastFrameTime = performance.now();
