@@ -1137,11 +1137,11 @@
     // 1. DATOS DEL JUEGO (PRESERVADOS DE CALABOZOS Y FRACCIONES)
     // =========================================================================
     const AVATARS = [
-      { id: 'boy_warrior', label: 'Guerrero', hair: '#65d6c8', shirt: '#e85338', hat: null },
-      { id: 'girl_sorceress', label: 'Hechicera', hair: '#c084fc', shirt: '#7e22ce', hat: '#581c87' },
-      { id: 'boy_wizard', label: 'Mago', hair: '#fde047', shirt: '#2563eb', hat: '#1d4ed8' },
-      { id: 'boy_adventurer', label: 'Aventurero', hair: '#a16207', shirt: '#16a34a', hat: '#15803d' },
-      { id: 'girl_adventurer', label: 'Exploradora', hair: '#fbbf24', shirt: '#0d9488', hat: null }
+      { id: 'boy_warrior', label: 'Guerrero', hair: '#4ecdc4', hairLight: '#9bf6ee', hairDark: '#2a9d8f', shirt: '#e85338', shirtDark: '#b8321c', accent: '#fbbf24', hat: null },
+      { id: 'girl_sorceress', label: 'Hechicera', hair: '#c084fc', hairLight: '#e9d5ff', hairDark: '#7e22ce', shirt: '#7e22ce', shirtDark: '#581c87', accent: '#fde047', hat: '#4c1d95' },
+      { id: 'boy_wizard', label: 'Mago', hair: '#facc15', hairLight: '#fef08a', hairDark: '#ca8a04', shirt: '#2563eb', shirtDark: '#1e40af', accent: '#38f8d4', hat: '#1d4ed8' },
+      { id: 'boy_adventurer', label: 'Aventurero', hair: '#92400e', hairLight: '#d97706', hairDark: '#5c2809', shirt: '#16a34a', shirtDark: '#15803d', accent: '#ef4444', hat: '#15803d' },
+      { id: 'girl_adventurer', label: 'Exploradora', hair: '#f59e0b', hairLight: '#fde047', hairDark: '#b45309', shirt: '#0d9488', shirtDark: '#115e59', accent: '#34d399', hat: null }
     ];
 
     const RPG_ITEMS = {
@@ -2155,16 +2155,59 @@
         targetCtx.fillRect(ox + 1, oy + 12, 3, 2);
       }
 
-      // 2. CABEZA: Pelo o Sombrero base (si no lleva casco)
-      if (!eq.helmet && avatarDef.hat) {
-        targetCtx.fillStyle = avatarDef.hat;
-        targetCtx.fillRect(ox + 4, oy - 3, 8, 3);
-        targetCtx.fillRect(ox + 1, oy, 14, 3);
-      }
+      // Contorno oscuro sutil (1px pixel outline) para máxima nitidez
+      targetCtx.fillStyle = '#120c1a';
+      targetCtx.fillRect(ox + 2, oy - 1, 12, 2);
+      targetCtx.fillRect(ox, oy + 2, 16, 11);
+      targetCtx.fillRect(ox + 2, oy + 12, 13, 8);
+
+      // 2. CABEZA: Pelo con sombreado 3 tonos + Sombrero único por avatar (si no lleva casco)
+      targetCtx.fillStyle = avatarDef.hairDark || avatarDef.hair;
+      targetCtx.fillRect(ox + 1, oy + 3, 14, 6);
+      targetCtx.fillRect(ox + 1, oy + 8, 4, 4);
       targetCtx.fillStyle = avatarDef.hair;
       targetCtx.fillRect(ox + 3, oy, 10, 4);
-      targetCtx.fillRect(ox + 1, oy + 3, 14, 5);
-      targetCtx.fillRect(ox + 1, oy + 8, 4, 3);
+      targetCtx.fillRect(ox + 2, oy + 3, 13, 5);
+      // Brillo superior del cabello
+      targetCtx.fillStyle = avatarDef.hairLight || '#ffffff';
+      targetCtx.fillRect(ox + 4, oy + 1, 7, 2);
+      // Cabello largo lateral para avatares femeninos
+      if (avatarDef.id === 'girl_sorceress' || avatarDef.id === 'girl_adventurer') {
+        targetCtx.fillStyle = avatarDef.hair;
+        targetCtx.fillRect(ox, oy + 7, 3, 7);
+        targetCtx.fillStyle = avatarDef.hairDark || avatarDef.hair;
+        targetCtx.fillRect(ox, oy + 12, 2, 3);
+      }
+      // Diadema esmeralda para Exploradora
+      if (!eq.helmet && avatarDef.id === 'girl_adventurer') {
+        targetCtx.fillStyle = '#34d399';
+        targetCtx.fillRect(ox + 3, oy + 2, 10, 2);
+        targetCtx.fillStyle = '#fef08a';
+        targetCtx.fillRect(ox + 9, oy + 2, 2, 2);
+      }
+      // Sombreros detallados por clase (Hechicera, Mago, Aventurero)
+      if (!eq.helmet && avatarDef.hat) {
+        if (avatarDef.id === 'girl_sorceress' || avatarDef.id === 'boy_wizard') {
+          // Sombrero puntiagudo mágico con ala ancha y banda brillante
+          targetCtx.fillStyle = '#120c1a';
+          targetCtx.fillRect(ox + 5, oy - 7, 6, 4);
+          targetCtx.fillRect(ox, oy - 1, 16, 4);
+          targetCtx.fillStyle = avatarDef.hat;
+          targetCtx.fillRect(ox + 6, oy - 6, 4, 3);
+          targetCtx.fillRect(ox + 4, oy - 3, 8, 3);
+          targetCtx.fillRect(ox + 1, oy, 14, 3);
+          targetCtx.fillStyle = avatarDef.accent || '#fbbf24';
+          targetCtx.fillRect(ox + 4, oy - 1, 8, 1); // cinta brillante
+          targetCtx.fillRect(ox + 8, oy - 2, 2, 2); // hebilla / estrella
+        } else {
+          // Gorra de explorador con pluma roja
+          targetCtx.fillStyle = avatarDef.hat;
+          targetCtx.fillRect(ox + 3, oy - 3, 10, 4);
+          targetCtx.fillRect(ox + 2, oy, 14, 2);
+          targetCtx.fillStyle = avatarDef.accent || '#ef4444';
+          targetCtx.fillRect(ox + 1, oy - 5, 3, 4); // pluma
+        }
+      }
 
       // 3. CASCOS ÚNICOS
       if (eq.helmet === 'cascoCuero') {
@@ -2192,14 +2235,24 @@
         targetCtx.fillRect(ox + 7, oy - 10, 3, 3);
       }
 
-      // 4. CARA Y OJOS
+      // 4. CARA, OJOS EXPRESIVOS CON BRILLO Y RUBOR
       targetCtx.fillStyle = '#ffd1b3';
       targetCtx.fillRect(ox + 5, oy + 7, 10, 6);
+      targetCtx.fillStyle = '#e8b392'; // sombra bajo el flequillo
+      targetCtx.fillRect(ox + 5, oy + 7, 10, 1);
+      // Rubor suave en mejillas
+      targetCtx.fillStyle = '#f8a590';
+      targetCtx.fillRect(ox + 6, oy + 11, 2, 1);
+      targetCtx.fillRect(ox + 13, oy + 11, 2, 1);
+      // Ojos con brillo blanco (catchlight)
       targetCtx.fillStyle = '#1e1626';
       targetCtx.fillRect(ox + 8, oy + 9, 2, 2);
       targetCtx.fillRect(ox + 13, oy + 9, 2, 2);
+      targetCtx.fillStyle = '#ffffff';
+      targetCtx.fillRect(ox + 8, oy + 9, 1, 1);
+      targetCtx.fillRect(ox + 13, oy + 9, 1, 1);
 
-      // 5. TORSO / PETOS ÚNICOS
+      // 5. TORSO / PETOS ÚNICOS O TRAJE DETALLADO DEL AVATAR
       if (eq.armor === 'armaduraCuero') {
         targetCtx.fillStyle = '#78350f';
         targetCtx.fillRect(ox + 3, oy + 13, 11, 7);
@@ -2215,8 +2268,29 @@
         targetCtx.fillStyle = '#c084fc';
         targetCtx.fillRect(ox + 3, oy + 13, 11, 2);
       } else {
+        // Traje base detallado con sombreado y ornamentos según clase
         targetCtx.fillStyle = avatarDef.shirt;
         targetCtx.fillRect(ox + 3, oy + 13, 11, 6);
+        targetCtx.fillStyle = avatarDef.shirtDark || avatarDef.shirt;
+        targetCtx.fillRect(ox + 3, oy + 13, 3, 6); // sombra lateral
+        targetCtx.fillRect(ox + 3, oy + 18, 11, 1);
+        // Detalle de cinturón / gema / bufanda propio del avatar
+        if (avatarDef.id === 'boy_warrior') {
+          targetCtx.fillStyle = '#78350f'; targetCtx.fillRect(ox + 3, oy + 17, 11, 2);
+          targetCtx.fillStyle = '#fbbf24'; targetCtx.fillRect(ox + 8, oy + 17, 3, 2);
+        } else if (avatarDef.id === 'girl_sorceress') {
+          targetCtx.fillStyle = '#e9d5ff'; targetCtx.fillRect(ox + 6, oy + 13, 5, 2);
+          targetCtx.fillStyle = '#fde047'; targetCtx.fillRect(ox + 8, oy + 15, 2, 2);
+        } else if (avatarDef.id === 'boy_wizard') {
+          targetCtx.fillStyle = '#38f8d4'; targetCtx.fillRect(ox + 8, oy + 13, 2, 6);
+          targetCtx.fillStyle = '#fbbf24'; targetCtx.fillRect(ox + 3, oy + 17, 11, 1);
+        } else if (avatarDef.id === 'boy_adventurer') {
+          targetCtx.fillStyle = '#b45309'; targetCtx.fillRect(ox + 4, oy + 13, 9, 2); // bufanda
+          targetCtx.fillStyle = '#78350f'; targetCtx.fillRect(ox + 3, oy + 17, 11, 2);
+        } else {
+          targetCtx.fillStyle = '#fef08a'; targetCtx.fillRect(ox + 5, oy + 13, 7, 2);
+          targetCtx.fillStyle = '#78350f'; targetCtx.fillRect(ox + 3, oy + 17, 11, 2);
+        }
       }
 
       // 6. ACCESORIOS / AMULETOS ÚNICOS
@@ -4397,6 +4471,16 @@
       });
     }
 
+    function restoreHeroLivesOnStageClear() {
+      // Recupera toda la vida al completar cada sala (salvo en Desafío 2: Defensa Perfecta)
+      if (gameState.mode === 'challenge' && gameState.currentChallenge === 2) return;
+      if (gameState.player.lives < gameState.player.maxLives) {
+        gameState.player.lives = gameState.player.maxLives;
+        syncHudHearts();
+        floatingTexts.push({ x: heroActor.baseX - 12, y: FLOOR_Y - 36, vy: -0.6, text: '+❤️ VIDA LLENA', color: '#4ade80', life: 1.2, maxLife: 1.2 });
+      }
+    }
+
     function proceedAfterMonsterDefeat() {
       gameState.player.defeatedTotal++;
       gameState.player.defeatedThisRun++;
@@ -4417,6 +4501,7 @@
             gameState.monsterHp = scaledHp;
             gameState.monsterMaxHp = scaledHp;
             monsterActor.visible = true;
+            restoreHeroLivesOnStageClear();
             updateSidebarUI();
           },
           () => {
@@ -4464,6 +4549,7 @@
             gameState.monsterHp = nextM.baseHp;
             gameState.monsterMaxHp = nextM.baseHp;
             monsterActor.visible = true;
+            restoreHeroLivesOnStageClear();
             updateSidebarUI();
           },
           () => {
