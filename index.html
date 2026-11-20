@@ -2850,9 +2850,52 @@
         ctx.restore();
       });
 
-      // Rayos de luz
+      // Rayos de luz y resplandor continuo del cofre hacia el objeto flotante arriba
       if (heroActor.raysTimer > 0) drawLightRays(heroActor.x + 9, heroActor.y - 11);
-      if (chestActor.visible && chestActor.raysTimer > 0) drawLightRays(chestActor.x + 14, chestActor.y - 10, '#fbbf24');
+      if (chestActor.visible && (chestActor.raysTimer > 0 || chestActor.isOpen)) {
+        const cx = chestActor.x + 14;
+        const cy = chestActor.y - 10;
+        const itemY = chestActor.y - 58;
+        const rCol = chestActor.gem ? chestActor.gem.color : '#fbbf24';
+
+        // Haz de luz ascendente desde el cofre hasta el objeto arriba
+        const beamGrad = ctx.createLinearGradient(cx, cy, cx, itemY - 30);
+        beamGrad.addColorStop(0, 'rgba(253, 224, 71, 0.45)');
+        beamGrad.addColorStop(0.5, 'rgba(251, 191, 36, 0.25)');
+        beamGrad.addColorStop(1, 'rgba(251, 191, 36, 0)');
+        ctx.save();
+        ctx.fillStyle = beamGrad;
+        ctx.beginPath();
+        ctx.moveTo(cx - 12, cy);
+        ctx.lineTo(cx - 38, itemY - 30);
+        ctx.lineTo(cx + 38, itemY - 30);
+        ctx.lineTo(cx + 12, cy);
+        ctx.closePath();
+        ctx.fill();
+        ctx.restore();
+
+        // Rayos giratorios saliendo del cofre y también centrados en el objeto arriba
+        drawLightRays(cx, cy, '#fbbf24');
+        drawLightRays(cx, itemY, rCol);
+
+        // Halo pulsante brillante detrás del objeto arriba del cofre
+        const pulseR = 32 + Math.sin(nowSec * 6) * 5;
+        const halo = ctx.createRadialGradient(cx, itemY, 4, cx, itemY, pulseR);
+        halo.addColorStop(0, 'rgba(255, 255, 255, 0.45)');
+        halo.addColorStop(0.45, 'rgba(251, 191, 36, 0.28)');
+        halo.addColorStop(1, 'rgba(251, 191, 36, 0)');
+        ctx.fillStyle = halo;
+        ctx.fillRect(cx - 45, itemY - 45, 90, 90);
+
+        // Estrellitas / destellos orbitando alrededor del objeto arriba
+        for (let s = 0; s < 6; s++) {
+          const ang = nowSec * 2.4 + (s * Math.PI * 2) / 6;
+          const sxp = Math.round(cx + Math.cos(ang) * 26);
+          const syp = Math.round(itemY + Math.sin(ang) * 16);
+          ctx.fillStyle = s % 2 === 0 ? '#ffffff' : rCol;
+          ctx.fillRect(sxp, syp, 2, 2);
+        }
+      }
 
       // Cofre
       if (chestActor.visible) {
