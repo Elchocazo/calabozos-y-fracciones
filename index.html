@@ -61,15 +61,78 @@
     .app-shell {
       width: 94vw;
       max-width: 1260px;
-      background: rgba(22, 16, 34, 0.90);
-      backdrop-filter: blur(4px);
-      border: 3px solid var(--panel-border);
+      background: rgba(16, 11, 28, 0.48);
+      backdrop-filter: blur(2px);
+      border: 3px solid rgba(124, 92, 196, 0.55);
       border-radius: 16px;
-      box-shadow: 0 22px 60px rgba(0, 0, 0, 0.85), inset 0 1px 0 rgba(255,255,255,0.08);
+      box-shadow: 0 22px 60px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255,255,255,0.12);
       padding: 22px;
       position: relative;
       z-index: 2;
     }
+
+    /* Tarjetas Decoradas de Modo de Juego (Estilo Placa RPG) */
+    .mode-card {
+      position: relative;
+      border-radius: 14px;
+      padding: 20px 18px;
+      text-align: left;
+      cursor: pointer;
+      transition: transform 0.16s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+      overflow: hidden;
+      border-width: 3px;
+      border-style: solid;
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.65), inset 0 0 0 2px rgba(255, 255, 255, 0.08);
+    }
+    .mode-card::before {
+      content: '';
+      position: absolute;
+      inset: 5px;
+      border: 1px dashed rgba(255, 255, 255, 0.18);
+      border-radius: 9px;
+      pointer-events: none;
+    }
+    .mode-card::after {
+      content: '';
+      position: absolute;
+      top: -28px;
+      right: -28px;
+      width: 92px;
+      height: 92px;
+      border-radius: 50%;
+      opacity: 0.18;
+      pointer-events: none;
+    }
+    .mode-card:hover {
+      transform: translateY(-4px) scale(1.02);
+    }
+    .mode-card-adventure {
+      background: linear-gradient(145deg, rgba(16, 68, 48, 0.94) 0%, rgba(12, 34, 28, 0.96) 100%);
+      border-color: #34d399;
+    }
+    .mode-card-adventure::after { background: #34d399; }
+    .mode-card-adventure:hover { box-shadow: 0 12px 28px rgba(52, 211, 153, 0.35), inset 0 0 0 2px rgba(253, 224, 71, 0.35); border-color: #fde047; }
+
+    .mode-card-challenges {
+      background: linear-gradient(145deg, rgba(112, 36, 16, 0.94) 0%, rgba(45, 16, 14, 0.96) 100%);
+      border-color: #fb923c;
+    }
+    .mode-card-challenges::after { background: #fb923c; }
+    .mode-card-challenges:hover { box-shadow: 0 12px 28px rgba(251, 146, 60, 0.38), inset 0 0 0 2px rgba(253, 224, 71, 0.35); border-color: #fde047; }
+
+    .mode-card-infinite {
+      background: linear-gradient(145deg, rgba(78, 26, 122, 0.94) 0%, rgba(28, 13, 52, 0.96) 100%);
+      border-color: #c084fc;
+    }
+    .mode-card-infinite::after { background: #c084fc; }
+    .mode-card-infinite:hover { box-shadow: 0 12px 28px rgba(192, 132, 252, 0.38), inset 0 0 0 2px rgba(56, 248, 212, 0.35); border-color: #38f8d4; }
+
+    .mode-card-tutorial {
+      background: linear-gradient(145deg, rgba(18, 62, 108, 0.94) 0%, rgba(12, 27, 54, 0.96) 100%);
+      border-color: #38bdf8;
+    }
+    .mode-card-tutorial::after { background: #38bdf8; }
+    .mode-card-tutorial:hover { box-shadow: 0 12px 28px rgba(56, 189, 248, 0.38), inset 0 0 0 2px rgba(186, 230, 253, 0.4); border-color: #bae6fd; }
 
     /* Botones Retro */
     .btn-retro {
@@ -757,29 +820,29 @@
         <h2 class="game-title" style="font-size:28px;">Selecciona un Modo de Juego</h2>
       </div>
 
-      <div class="dungeon-grid" style="max-width:680px;">
-        <div id="mode-adventure-card" class="dungeon-card" style="border-color:#22c55e;">
-          <span class="dungeon-badge" style="background:#064e3b; color:#6ee7b7;">Historia Principal</span>
-          <h3 style="color:#4ade80; font-size:18px; margin-bottom:6px;">🗺️ Modo Aventura</h3>
-          <p style="font-size:12px; color:#c4bad6; line-height:1.45;">Explora mazmorras, derrota jefes, abre cofres de botín y desbloquea nuevos mundos.</p>
+      <div class="dungeon-grid" style="max-width:740px; gap:16px;">
+        <div id="mode-adventure-card" class="mode-card mode-card-adventure">
+          <span class="dungeon-badge" style="background:#064e3b; color:#6ee7b7; border:1px solid #34d399;">Historia Principal</span>
+          <h3 style="color:#6ee7b7; font-size:19px; margin-bottom:6px; text-shadow:0 2px 4px rgba(0,0,0,0.6);">🗺️ Modo Aventura</h3>
+          <p style="font-size:12px; color:#d1fae5; line-height:1.45;">Explora mazmorras, derrota jefes, abre cofres de botín y desbloquea nuevos mundos.</p>
         </div>
 
-        <div id="mode-challenges-card" class="dungeon-card" style="border-color:#f97316;">
-          <span class="dungeon-badge" style="background:#7c2d12; color:#fdba74;">4 Misiones Especiales</span>
-          <h3 style="color:#fb923c; font-size:18px; margin-bottom:6px;">🎯 Desafíos</h3>
-          <p style="font-size:12px; color:#c4bad6; line-height:1.45;">Supera pruebas contrarreloj, rachas perfectas y retos sin pociones por grandes premios.</p>
+        <div id="mode-challenges-card" class="mode-card mode-card-challenges">
+          <span class="dungeon-badge" style="background:#7c2d12; color:#fdba74; border:1px solid #fb923c;">4 Misiones Especiales</span>
+          <h3 style="color:#fdba74; font-size:19px; margin-bottom:6px; text-shadow:0 2px 4px rgba(0,0,0,0.6);">🎯 Desafíos</h3>
+          <p style="font-size:12px; color:#ffedd5; line-height:1.45;">Supera pruebas contrarreloj, rachas perfectas y retos sin pociones por grandes premios.</p>
         </div>
 
-        <div id="mode-infinite-card" class="dungeon-card" style="border-color:#a855f7;">
-          <span class="dungeon-badge" style="background:#581c87; color:#e9d5ff;">Recompensas x2</span>
-          <h3 style="color:#c084fc; font-size:18px; margin-bottom:6px;">♾️ Modo Infinito</h3>
-          <p style="font-size:12px; color:#c4bad6; line-height:1.45;">Oleadas interminables de monstruos cada vez más fuertes. ¡Rompe tu récord!</p>
+        <div id="mode-infinite-card" class="mode-card mode-card-infinite">
+          <span class="dungeon-badge" style="background:#581c87; color:#e9d5ff; border:1px solid #c084fc;">Recompensas x2</span>
+          <h3 style="color:#e9d5ff; font-size:19px; margin-bottom:6px; text-shadow:0 2px 4px rgba(0,0,0,0.6);">♾️ Modo Infinito</h3>
+          <p style="font-size:12px; color:#f3e8ff; line-height:1.45;">Oleadas interminables de monstruos cada vez más fuertes. ¡Rompe tu récord!</p>
         </div>
 
-        <div id="mode-tutorial-card" class="dungeon-card" style="border-color:#38bdf8;">
-          <span class="dungeon-badge" style="background:#0c4a6e; color:#bae6fd;">Guía Rápida</span>
-          <h3 style="color:#38bdf8; font-size:18px; margin-bottom:6px;">📚 Tutorial</h3>
-          <p style="font-size:12px; color:#c4bad6; line-height:1.45;">Aprende las reglas de fracciones, controles del héroe, tienda, escudos y cofres.</p>
+        <div id="mode-tutorial-card" class="mode-card mode-card-tutorial">
+          <span class="dungeon-badge" style="background:#0c4a6e; color:#bae6fd; border:1px solid #38bdf8;">Guía Rápida</span>
+          <h3 style="color:#7dd3fc; font-size:19px; margin-bottom:6px; text-shadow:0 2px 4px rgba(0,0,0,0.6);">📚 Tutorial</h3>
+          <p style="font-size:12px; color:#e0f2fe; line-height:1.45;">Aprende las reglas de fracciones, controles del héroe, tienda, escudos y cofres.</p>
         </div>
       </div>
 
@@ -3168,42 +3231,144 @@
         });
         bgCtx.globalAlpha = 1;
       } else {
-        // Tema Menú / Mapa del Reino: Noche medieval con castillo, montañas y luna
-        const sky = bgCtx.createLinearGradient(0, 0, 0, 180);
-        sky.addColorStop(0, '#0d091a');
-        sky.addColorStop(0.65, '#1d1333');
-        sky.addColorStop(1, '#2b1b42');
+        // Tema Menú / Selección de Modo: GRAN CASTILLO MEDIEVAL PIXEL ART
+        const sky = bgCtx.createLinearGradient(0, 0, 0, 150);
+        sky.addColorStop(0, '#090617');
+        sky.addColorStop(0.55, '#1d1238');
+        sky.addColorStop(1, '#3b1f54');
         bgCtx.fillStyle = sky;
         bgCtx.fillRect(0, 0, 320, 180);
 
         // Estrellas titilantes
-        ambientEmbers.slice(0, 18).forEach((s, i) => {
-          bgCtx.fillStyle = Math.sin(t * 3 + i) > 0 ? '#fef9c3' : 'rgba(255,255,255,0.35)';
-          bgCtx.fillRect(s.x, s.y % 95, 2, 2);
+        ambientEmbers.slice(0, 22).forEach((s, i) => {
+          bgCtx.fillStyle = Math.sin(t * 2.8 + i) > 0 ? '#fef9c3' : 'rgba(255,255,255,0.3)';
+          bgCtx.fillRect(s.x, s.y % 88, i % 3 === 0 ? 2 : 1, i % 3 === 0 ? 2 : 1);
         });
 
-        // Luna brillante
-        bgCtx.fillStyle = 'rgba(254, 240, 138, 0.16)';
-        bgCtx.beginPath(); bgCtx.arc(265, 32, 24, 0, Math.PI * 2); bgCtx.fill();
+        // Luna llena majestuosa detrás de la torre central
+        const moonGlow = bgCtx.createRadialGradient(246, 36, 6, 246, 36, 38);
+        moonGlow.addColorStop(0, 'rgba(254, 240, 138, 0.35)');
+        moonGlow.addColorStop(1, 'rgba(254, 240, 138, 0)');
+        bgCtx.fillStyle = moonGlow;
+        bgCtx.fillRect(205, 0, 82, 78);
         bgCtx.fillStyle = '#fef08a';
-        bgCtx.beginPath(); bgCtx.arc(265, 32, 11, 0, Math.PI * 2); bgCtx.fill();
+        bgCtx.beginPath(); bgCtx.arc(246, 36, 13, 0, Math.PI * 2); bgCtx.fill();
+        bgCtx.fillStyle = '#fde047';
+        bgCtx.fillRect(241, 31, 4, 3); bgCtx.fillRect(249, 38, 3, 3);
+
+        // Nubes suaves cruzando detrás del castillo
+        bgCtx.fillStyle = 'rgba(139, 92, 246, 0.14)';
+        [0, 1, 2].forEach(i => {
+          const cx = ((i * 120 + t * 3.5) % 360) - 30;
+          const cy = 26 + i * 16;
+          bgCtx.fillRect(Math.round(cx), cy, 42, 7);
+          bgCtx.fillRect(Math.round(cx) + 8, cy - 4, 24, 5);
+        });
 
         // Montañas lejanas
-        bgCtx.fillStyle = '#181029';
+        bgCtx.fillStyle = '#180f2b';
         bgCtx.beginPath();
-        bgCtx.moveTo(0, 180); bgCtx.lineTo(0, 125); bgCtx.lineTo(55, 92); bgCtx.lineTo(120, 128);
-        bgCtx.lineTo(190, 88); bgCtx.lineTo(260, 122); bgCtx.lineTo(320, 96); bgCtx.lineTo(320, 180);
+        bgCtx.moveTo(0, 155); bgCtx.lineTo(0, 118); bgCtx.lineTo(44, 82); bgCtx.lineTo(96, 116);
+        bgCtx.lineTo(160, 74); bgCtx.lineTo(222, 114); bgCtx.lineTo(282, 80); bgCtx.lineTo(320, 112); bgCtx.lineTo(320, 155);
         bgCtx.closePath();
         bgCtx.fill();
 
-        // Silueta de Castillo de Mazmorra a los costados
-        bgCtx.fillStyle = '#120b1f';
-        bgCtx.fillRect(14, 92, 28, 88); bgCtx.fillRect(10, 86, 8, 10); bgCtx.fillRect(38, 86, 8, 10);
-        bgCtx.fillRect(274, 98, 32, 82); bgCtx.fillRect(270, 90, 10, 12); bgCtx.fillRect(298, 90, 10, 12);
-        // Ventanas iluminadas del castillo
+        // --- GRAN CASTILLO MEDIEVAL CENTRAL ---
+        const drawCastleTower = (tx, topY, tw, th, roofH, flagColor) => {
+          // Cuerpo de piedra de la torre
+          bgCtx.fillStyle = '#251c38';
+          bgCtx.fillRect(tx, topY, tw, th);
+          bgCtx.fillStyle = '#33274d';
+          bgCtx.fillRect(tx + 2, topY, Math.floor(tw * 0.35), th); // luz lunar izquierda
+          // Almenas
+          bgCtx.fillStyle = '#3b2e59';
+          for (let ax = tx - 2; ax < tx + tw; ax += 6) {
+            bgCtx.fillRect(ax, topY - 4, 4, 4);
+          }
+          // Tejado puntiagudo medieval
+          bgCtx.fillStyle = '#4c1d95';
+          bgCtx.beginPath();
+          bgCtx.moveTo(tx - 3, topY - 3);
+          bgCtx.lineTo(tx + tw / 2, topY - 3 - roofH);
+          bgCtx.lineTo(tx + tw + 3, topY - 3);
+          bgCtx.closePath();
+          bgCtx.fill();
+          // Banderín ondeando al viento
+          const wave = Math.round(Math.sin(t * 7 + tx) * 1.5);
+          bgCtx.fillStyle = '#cbd5e1';
+          bgCtx.fillRect(tx + Math.floor(tw / 2), topY - 12 - roofH, 1, 10);
+          bgCtx.fillStyle = flagColor;
+          bgCtx.fillRect(tx + Math.floor(tw / 2) + 1, topY - 12 - roofH, 7, 3);
+          bgCtx.fillRect(tx + Math.floor(tw / 2) + 7, topY - 12 - roofH + wave, 4, 2);
+          // Ventanas iluminadas cálidas
+          bgCtx.fillStyle = '#fbbf24';
+          bgCtx.fillRect(tx + Math.floor(tw / 2) - 2, topY + 12, 4, 7);
+          if (th > 48) {
+            bgCtx.fillRect(tx + Math.floor(tw / 2) - 2, topY + 30, 4, 7);
+          }
+        };
+
+        // 5 Torres del Castillo (exteriores, intermedias y gran torreón central)
+        drawCastleTower(22, 82, 24, 68, 18, '#ef4444');
+        drawCastleTower(274, 82, 24, 68, 18, '#ef4444');
+        drawCastleTower(82, 66, 26, 84, 22, '#f59e0b');
+        drawCastleTower(212, 66, 26, 84, 22, '#f59e0b');
+        drawCastleTower(142, 48, 36, 102, 26, '#ef4444');
+
+        // Muralla principal conectando todas las torres
+        bgCtx.fillStyle = '#1f1730';
+        bgCtx.fillRect(36, 106, 248, 44);
+        // Almenas de la muralla
+        bgCtx.fillStyle = '#2d2245';
+        for (let mx = 38; mx < 282; mx += 10) {
+          bgCtx.fillRect(mx, 101, 6, 5);
+        }
+        // Ventanas pequeñas a lo largo de la muralla
         bgCtx.fillStyle = '#f59e0b';
-        bgCtx.fillRect(24, 106, 4, 6); bgCtx.fillRect(24, 124, 4, 6);
-        bgCtx.fillRect(286, 112, 4, 6); bgCtx.fillRect(286, 130, 4, 6);
+        [62, 118, 198, 254].forEach(wx => bgCtx.fillRect(wx, 116, 4, 6));
+
+        // Gran Portón Arqueado del Castillo + Antorchas en la entrada
+        bgCtx.fillStyle = '#0e0917';
+        bgCtx.beginPath();
+        bgCtx.roundRect(146, 120, 28, 30, [14, 14, 0, 0]);
+        bgCtx.fill();
+        bgCtx.fillStyle = '#475569';
+        for (let gx = 150; gx <= 170; gx += 5) bgCtx.fillRect(gx, 124, 2, 26);
+
+        // Antorchas parpadeantes a los lados del portón
+        [140, 180].forEach(tx => {
+          const fl = Math.sin(t * 15 + tx) > 0;
+          bgCtx.fillStyle = 'rgba(251, 146, 60, 0.25)';
+          bgCtx.beginPath(); bgCtx.arc(tx, 128, 10, 0, Math.PI * 2); bgCtx.fill();
+          bgCtx.fillStyle = fl ? '#f97316' : '#fde047';
+          bgCtx.fillRect(tx - 1, 126, 3, 4);
+        });
+
+        // Foso de agua / Lago reflejando el castillo y la luna
+        bgCtx.fillStyle = '#101d38';
+        bgCtx.fillRect(0, 150, 320, 30);
+        // Puente de piedra hacia el portón
+        bgCtx.fillStyle = '#33274d';
+        bgCtx.fillRect(144, 150, 32, 30);
+        bgCtx.fillStyle = '#48386b';
+        bgCtx.fillRect(148, 150, 24, 30);
+        // Reflejos cálidos titilantes en el agua del foso
+        bgCtx.fillStyle = 'rgba(251, 191, 36, 0.25)';
+        [34, 94, 224, 284].forEach((rx, idx) => {
+          const shift = Math.round(Math.sin(t * 3 + idx) * 2);
+          bgCtx.fillRect(rx + shift, 156, 8, 2);
+          bgCtx.fillRect(rx - shift, 164, 6, 2);
+        });
+
+        // Partículas mágicas doradas flotando suavemente
+        ambientEmbers.slice(0, 14).forEach(e => {
+          const ey = (180 - ((e.y + t * e.spd * 0.6) % 180));
+          const ex = (e.x + Math.sin(t * 1.4 + e.phase) * 8 + 320) % 320;
+          bgCtx.fillStyle = '#fde047';
+          bgCtx.globalAlpha = 0.4 + Math.sin(t * 4 + e.phase) * 0.3;
+          bgCtx.fillRect(Math.round(ex), Math.round(ey), 2, 2);
+        });
+        bgCtx.globalAlpha = 1;
       }
     }
 
