@@ -1368,10 +1368,24 @@
       enemyProjectiles.length = 0;
     }
 
-    function executeEnemyTimedAttack() {
+    function updateEnemyTurnBar() {
       const mDef = getCurrentMonsterDef();
-      if (!mDef || !monsterActor.visible) return;
+      const atkBarEl = document.getElementById('ui-monster-atk-fill');
+      const atkLblEl = document.getElementById('ui-monster-atk-label');
+      if (!mDef || !atkBarEl || !atkLblEl) return;
+      const maxTurns = 2;
+      const pct = Math.min(100, (enemyAttackTimer / maxTurns) * 100);
+      atkBarEl.style.width = `${pct}%`;
+      atkLblEl.textContent = enemyAttackTimer >= 1
+        ? `🔥 ¡Contraataque próximo! • Pod:${mDef.atkPower || 3}`
+        : `⚔️ Contraataque: ${enemyAttackTimer}/${maxTurns} • Pod:${mDef.atkPower || 3}`;
+    }
+
+    function executeEnemyTimedAttack(onComplete = null) {
+      const mDef = getCurrentMonsterDef();
+      if (!mDef || !monsterActor.visible) { if (onComplete) onComplete(); return; }
       enemyAttackTimer = 0;
+      updateEnemyTurnBar();
 
       const finishHit = () => {
         const stats = getPlayerStats();
@@ -1388,6 +1402,7 @@
               color: '#38bdf8', size: 2, gravity: 0.1, life: 0.35
             });
           }
+          if (onComplete) setTimeout(onComplete, 350);
           return;
         }
 
@@ -1404,7 +1419,7 @@
 
         if (gameState.mode === 'challenge' && gameState.currentChallenge === 2) {
           stopChallengeTimer();
-          showGenericModal('🛡️ Desafío Fallido', 'El enemigo te golpeó durante <strong>Defensa Perfecta</strong>. ¡Sube tu defensa o responde más rápido!', () => {
+          showGenericModal('🛡️ Desafío Fallido', 'El enemigo te golpeó durante <strong>Defensa Perfecta</strong>. ¡Sube tu defensa para bloquear sus contraataques!', () => {
             gameState.player.lives = gameState.player.maxLives;
             showChallengesScreen();
           });
@@ -1416,7 +1431,7 @@
           setTimeout(() => {
             showGenericModal(
               '💀 ¡Derrotado en Combate!',
-              `El enemigo te venció, pero acumulaste <strong>${gameState.player.coins} monedas</strong>.<br>Tip: Equipa armadura o escudo para bloquear ataques enemigos.`,
+              `El enemigo te venció, pero acumulaste <strong>${gameState.player.coins} monedas</strong>.<br>Tip: Equipa armadura o escudo para bloquear contraataques enemigos.`,
               () => {
                 gameState.player.lives = gameState.player.maxLives;
                 if (gameState.mode === 'infinite') showInfiniteScreen();
@@ -1425,6 +1440,8 @@
               }
             );
           }, 500);
+        } else if (onComplete) {
+          setTimeout(onComplete, 480);
         }
       };
 
@@ -1884,27 +1901,6 @@
           }
         }
         return;
-      }
-
-      // --- TEMPORIZADOR DE ATAQUE DEL ENEMIGO (PAUSADO EN MODALES/COFRE/VICTORIA) ---
-      const mDef = getCurrentMonsterDef();
-      const canEnemyCharge = mDef && monsterActor.visible && !gameState.waitingChest && !gameState.dungeonVictory && !isAnyModalOpen() && gameState.player.lives > 0;
-      const atkBarEl = document.getElementById('ui-monster-atk-fill');
-      const atkLblEl = document.getElementById('ui-monster-atk-label');
-      if (canEnemyCharge) {
-        const interval = mDef.atkInterval || 15;
-        enemyAttackTimer += dt;
-        const pct = Math.min(100, (enemyAttackTimer / interval) * 100);
-        if (atkBarEl) atkBarEl.style.width = `${pct}%`;
-        if (atkLblEl) {
-          const left = Math.max(0, Math.ceil(interval - enemyAttackTimer));
-          atkLblEl.textContent = `⚡ Ataque (${left}s) • Pod:${mDef.atkPower || 3}`;
-        }
-        if (enemyAttackTimer >= interval) {
-          executeEnemyTimedAttack();
-        }
-      } else if (atkBarEl) {
-        atkBarEl.style.width = '0%';
       }
 
       // Proyectiles enemigos volando hacia el héroe
@@ -4158,6 +4154,7 @@
       drawPixelHero(mctx, 3, 2, avDef);
 
       updateModeBanner();
+      updateEnemyTurnBar();
       checkAchievements();
     }
 
@@ -4327,7 +4324,6 @@
       gameState.player.coins += coinsGain;
       gameState.player.xp += xpGain;
       gameState.monsterHp -= stats.dmg;
-      enemyAttackTimer *= 0.35; // ¡Tu golpe interrumpe/retrasa el ataque enemigo!
 
       const taunts = mDef.taunts || DEFAULT_HIT_TAUNTS;
       showMonsterTaunt(taunts[Math.floor(Math.random() * taunts.length)]);
@@ -4347,6 +4343,8 @@
         }
 
         if (gameState.monsterHp <= 0) {
+          enemyAttackTimer = 0;
+          updateEnemyTurnBar();
           // Monstruo derrotado
           let droppedItem = null;
           if (mDef.loot && mDef.loot.length > 0) {
@@ -4368,10 +4366,22 @@
             }
           }, 420);
         } else {
-          setTimeout(() => {
-            gameState.attackLocked = false;
-            generateFractionProblem();
-          }, 550);
+          // Turno del enemigo DESPUÉS del ataque del personaje
+          enemyAttackTimer++;
+          updateEnemyTurnBar();
+          if (enemyAttackTimer >= 2) {
+            setTimeout(() => {
+              executeEnemyTimedAttack(() => {
+                gameState.attackLocked = false;
+                generateFractionProblem();
+              });
+            }, 460);
+          } else {
+            setTimeout(() => {
+              gameState.attackLocked = false;
+              generateFractionProblem();
+            }, 520);
+          }
         }
       });
     }
