@@ -604,28 +604,47 @@
 
     /* Panel de Problema de Fracciones */
     .problem-card {
-      background: #140f20;
-      border: 2px solid #35274d;
-      border-radius: 12px;
-      padding: 14px 16px;
+      background: linear-gradient(180deg, #1b132b 0%, #120c1e 100%);
+      border: 2px solid #433066;
+      border-radius: 14px;
+      padding: 14px 18px 16px;
       text-align: center;
       position: relative;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 10px 26px rgba(0, 0, 0, 0.55);
     }
     .problem-type-label {
-      font-size: 12px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
       text-transform: uppercase;
-      letter-spacing: 1px;
+      letter-spacing: 1.2px;
       color: var(--accent-mint);
       font-weight: 800;
-      margin-bottom: 8px;
+      margin-bottom: 12px;
+      padding: 4px 14px;
+      border-radius: 999px;
+      background: rgba(56, 248, 212, 0.08);
+      border: 1px solid rgba(56, 248, 212, 0.28);
     }
-    .fraction-row {
+    .problem-battle-row {
       display: flex;
       justify-content: center;
       align-items: center;
-      gap: 10px;
-      margin-bottom: 14px;
-      min-height: 62px;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .fraction-row {
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      gap: 12px;
+      min-height: 70px;
+      padding: 8px 18px;
+      border-radius: 12px;
+      background: rgba(11, 7, 20, 0.62);
+      border: 1.5px solid #2f224a;
+      box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.45);
     }
     .fraction {
       display: inline-flex;
@@ -635,44 +654,97 @@
       font-weight: 900;
       color: #fff;
       line-height: 1.05;
+      text-shadow: 0 2px 6px rgba(0, 0, 0, 0.65);
     }
     .fraction .num {
       border-bottom: 3px solid var(--accent-gold);
-      padding: 0 8px 3px;
-      min-width: 34px;
+      padding: 0 10px 4px;
+      min-width: 36px;
     }
     .fraction .den {
-      padding: 3px 8px 0;
-      min-width: 34px;
+      padding: 4px 10px 0;
+      min-width: 36px;
     }
     .op-symbol {
-      font-size: 28px;
+      font-size: 26px;
       font-weight: 900;
       color: var(--accent-mint);
+      text-shadow: 0 0 10px rgba(56, 248, 212, 0.4);
     }
 
     .answer-controls {
-      display: flex;
+      display: inline-flex;
       justify-content: center;
       align-items: center;
-      gap: 12px;
+      gap: 14px;
       flex-wrap: wrap;
     }
+    .frac-answer-stack {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+      padding: 6px 10px;
+      border-radius: 12px;
+      background: rgba(17, 11, 30, 0.85);
+      border: 1.5px solid #48336e;
+    }
+    .frac-answer-bar {
+      width: 58px;
+      height: 3px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #f59e0b, #fde047);
+      box-shadow: 0 0 8px rgba(253, 224, 71, 0.45);
+    }
     .frac-input {
-      width: 72px;
-      background: #221933;
-      border: 2px solid #523b7a;
+      width: 64px;
+      background: #231838;
+      border: 2px solid #563d82;
       color: #fff;
       font-size: 20px;
-      font-weight: 800;
+      font-weight: 900;
       text-align: center;
-      padding: 8px;
+      padding: 5px 4px;
       border-radius: 8px;
       outline: none;
+      -moz-appearance: textfield;
+      appearance: textfield;
+      transition: border-color 0.18s, box-shadow 0.18s, background 0.18s;
+    }
+    .frac-input::-webkit-outer-spin-button,
+    .frac-input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    .frac-input::placeholder {
+      color: #6d5d8c;
+      font-size: 13px;
+      font-weight: 700;
     }
     .frac-input:focus {
+      background: #2a1d44;
       border-color: var(--accent-mint);
-      box-shadow: 0 0 10px rgba(56, 248, 212, 0.3);
+      box-shadow: 0 0 12px rgba(56, 248, 212, 0.35);
+    }
+    .btn-attack-rpg {
+      padding: 12px 22px;
+      font-size: 15px;
+      font-weight: 800;
+      border-radius: 10px;
+      box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);
+    }
+    .btn-choice-rpg {
+      padding: 12px 24px;
+      font-size: 14px;
+      font-weight: 800;
+      border-radius: 10px;
+      min-width: 135px;
+    }
+    .problem-enter-hint {
+      margin-top: 8px;
+      font-size: 10px;
+      color: #82759c;
+      letter-spacing: 0.4px;
     }
 
     /* Modales RPG */
@@ -1126,14 +1198,17 @@
           </div>
 
           <div id="ui-monster-taunt" class="monster-taunt">¡Grrr!</div>
-          <div class="stage-hint-keys">Mover: ← → • Saltar: ↑ • Abrir Cofre: E</div>
+          <div class="stage-hint-keys">Mover: ← → • Saltar: ↑ • Especial: Q • Cofre: E</div>
         </div>
 
         <!-- Tarjeta del Problema Matemático -->
         <div class="problem-card">
           <div id="ui-problem-type" class="problem-type-label">¿Qué tipo de fracción es esta?</div>
-          <div id="ui-fraction-display" class="fraction-row"></div>
-          <div id="ui-answer-area" class="answer-controls"></div>
+          <div class="problem-battle-row">
+            <div id="ui-fraction-display" class="fraction-row"></div>
+            <div id="ui-answer-area" class="answer-controls"></div>
+          </div>
+          <div id="ui-problem-hint" class="problem-enter-hint">Escribe numerador y denominador • Pulsa Enter para atacar</div>
         </div>
       </main>
     </section>
@@ -4855,26 +4930,45 @@
       document.getElementById('ui-fraction-display').innerHTML = html;
 
       const area = document.getElementById('ui-answer-area');
+      const hintEl = document.getElementById('ui-problem-hint');
       if (typeof answer === 'string') {
+        if (hintEl) hintEl.textContent = 'Selecciona el tipo de fracción para lanzar tu ataque';
         area.innerHTML = `
-          <button class="btn-retro btn-primary" onclick="submitIdAnswer('Propia')">Propia</button>
-          <button class="btn-retro btn-primary" onclick="submitIdAnswer('Impropia')">Impropia</button>
+          <button class="btn-retro btn-success btn-choice-rpg" onclick="submitIdAnswer('Propia')">✨ Propia</button>
+          <button class="btn-retro btn-primary btn-choice-rpg" onclick="submitIdAnswer('Impropia')">🔥 Impropia</button>
         `;
       } else {
+        if (hintEl) hintEl.textContent = 'Pulsa ↓ o / para bajar al denominador • Enter para atacar';
         area.innerHTML = `
-          <input type="number" id="inp-num" class="frac-input" placeholder="Num" />
-          <span class="op-symbol">/</span>
-          <input type="number" id="inp-den" class="frac-input" placeholder="Den" />
-          <button class="btn-retro btn-success" onclick="submitMathAnswer()"><i class="fas fa-bolt"></i> Atacar</button>
+          <span class="op-symbol">=</span>
+          <div class="frac-answer-stack">
+            <input type="number" id="inp-num" class="frac-input" placeholder="Num" autocomplete="off" />
+            <div class="frac-answer-bar"></div>
+            <input type="number" id="inp-den" class="frac-input" placeholder="Den" autocomplete="off" />
+          </div>
+          <button class="btn-retro btn-success btn-attack-rpg" onclick="submitMathAnswer()"><i class="fas fa-bolt"></i> Atacar</button>
         `;
         setTimeout(() => {
           const numEl = document.getElementById('inp-num');
           const denEl = document.getElementById('inp-den');
-          if (numEl) {
+          if (numEl && denEl) {
             numEl.focus();
-            [numEl, denEl].forEach(el => el.addEventListener('keydown', (e) => {
-              if (e.key === 'Enter') submitMathAnswer();
-            }));
+            numEl.addEventListener('keydown', (e) => {
+              if (e.key === 'ArrowDown' || e.key === '/' || (e.key === 'Enter' && denEl.value === '')) {
+                e.preventDefault();
+                denEl.focus();
+              } else if (e.key === 'Enter') {
+                submitMathAnswer();
+              }
+            });
+            denEl.addEventListener('keydown', (e) => {
+              if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                numEl.focus();
+              } else if (e.key === 'Enter') {
+                submitMathAnswer();
+              }
+            });
           }
         }, 40);
       }
