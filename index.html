@@ -1654,7 +1654,6 @@
         // Equilibrio justo: si tu Defensa iguala o supera el poder de ataque enemigo, ¡BLOQUEAS!
         if (stats.def >= atkPow) {
           SFX.block();
-          screenShake = 3;
           floatingTexts.push({ x: heroActor.x - 6, y: heroActor.y - 30, vy: -0.8, text: '🛡️ BLOQUEADO', color: '#38bdf8', life: 0.9, maxLife: 0.9 });
           for (let i = 0; i < 8; i++) {
             particles.push({
@@ -1890,9 +1889,7 @@
         heroActor.attackTimer = 0.24;
         if (isCrit) SFX.crit(); else SFX.hit();
 
-        // 1. Screen Shake (10px normal, 15px en crítico)
-        screenShake = isCrit ? 15 : 10;
-        // 2. Hit Stop (0.12s)
+        // 1. Hit Stop (0.12s)
         hitStopFrames = isCrit ? 9 : 7;
         // 3. White Flash (3 frames)
         monsterActor.whiteFlashFrames = 3;
@@ -1959,9 +1956,8 @@
       if (breakFullHeart) triggerHeartBreakFX();
       // 5. Red Tint 0.3s
       heroActor.redTintTimer = 0.3;
-      // 6. Color Split 14px + 4px shake
+      // 6. Color Split 14px
       heroActor.colorSplitTimer = 0.28;
-      screenShake = 7;
       hitStopFrames = 4;
     }
 
@@ -2029,7 +2025,6 @@
         chestActor.squashY = 0.8;
         // 1. Light Rays (10 rayos dorados)
         chestActor.raysTimer = 1.2;
-        screenShake = 5;
 
         // 4. Coin Fountain (14 monedas)
         for (let i = 0; i < 14; i++) {
@@ -2092,8 +2087,6 @@
       heroActor.isGrounded = false;
       // 6. Light Rays
       heroActor.raysTimer = 4.0;
-      // 3. Banner shake
-      screenShake = 6;
 
       // 2. Confetti Pop (36 confetis desde 2 cañones)
       for (let i = 0; i < 36; i++) {
@@ -5633,7 +5626,13 @@
             updateSidebarUI();
           },
           () => {
-            floatingTexts.push({ x: W / 2 - 28, y: 54, vy: -0.4, text: `OLEADA ${gameState.infiniteWave}`, color: '#c084fc', life: 1.2, maxLife: 1.2 });
+            const curM = getCurrentMonsterDef();
+            if (curM && curM.isBoss) {
+              screenShake = 14;
+              floatingTexts.push({ x: W / 2 - 48, y: 50, vy: -0.35, text: '👑 ¡JEFE EN CAMINO!', color: '#f43f5e', life: 1.6, maxLife: 1.6 });
+            } else {
+              floatingTexts.push({ x: W / 2 - 28, y: 54, vy: -0.4, text: `OLEADA ${gameState.infiniteWave}`, color: '#c084fc', life: 1.2, maxLife: 1.2 });
+            }
             gameState.attackLocked = false;
             generateFractionProblem();
           }
@@ -5682,7 +5681,13 @@
             updateSidebarUI();
           },
           () => {
-            floatingTexts.push({ x: W / 2 - 26, y: 54, vy: -0.4, text: `SALA ${gameState.monsterIndex + 1} / ${dung.monsters.length}`, color: '#fde047', life: 1.2, maxLife: 1.2 });
+            const curM = dung.monsters[gameState.monsterIndex];
+            if (curM && curM.isBoss) {
+              screenShake = 14;
+              floatingTexts.push({ x: W / 2 - 48, y: 50, vy: -0.35, text: '👑 ¡BATALLA DE JEFE!', color: '#f43f5e', life: 1.6, maxLife: 1.6 });
+            } else {
+              floatingTexts.push({ x: W / 2 - 26, y: 54, vy: -0.4, text: `SALA ${gameState.monsterIndex + 1} / ${dung.monsters.length}`, color: '#fde047', life: 1.2, maxLife: 1.2 });
+            }
             gameState.attackLocked = false;
             generateFractionProblem();
           }
@@ -5701,7 +5706,6 @@
         gameState.player.equipped.shield = null;
         const idx = gameState.player.backpack.indexOf(sid);
         if (idx > -1) gameState.player.backpack.splice(idx, 1);
-        screenShake = 5;
         updateSidebarUI();
         showGenericModal('🛡️ ¡Escudo Roto!', `Tu <strong>${shieldName}</strong> absorbió el impacto, ¡pero se hizo añicos!`, () => {
           showSageExplanation();
@@ -6257,7 +6261,7 @@
 
       let discoveredCount = 0;
       allEntries.forEach(({ m, dName, badgeColor }) => {
-        const discovered = gameState.discoveredMonsters.includes(m.name) || gameState.player.isDev;
+        const discovered = gameState.discoveredMonsters.includes(m.style) || gameState.discoveredMonsters.includes(m.name) || gameState.player.isDev;
         if (discovered) discoveredCount++;
 
         const card = document.createElement('div');
