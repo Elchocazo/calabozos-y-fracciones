@@ -2446,6 +2446,17 @@
       targetCtx.restore();
     }
 
+    // Buffers offscreen para contorno Pixel Art perfecto de 1px en los 14 monstruos
+    const monsterBuf = document.createElement('canvas');
+    monsterBuf.width = 80; monsterBuf.height = 80;
+    const mBufCtx = monsterBuf.getContext('2d');
+    mBufCtx.imageSmoothingEnabled = false;
+
+    const monsterOut = document.createElement('canvas');
+    monsterOut.width = 80; monsterOut.height = 80;
+    const mOutCtx = monsterOut.getContext('2d');
+    mOutCtx.imageSmoothingEnabled = false;
+
     function drawPixelMonster(mDef) {
       if (!monsterActor.visible || !mDef) return;
       const mx = Math.round(monsterActor.x);
@@ -2462,10 +2473,19 @@
 
       // Sombra en el suelo
       const shadowW = mDef.isBoss ? 19 : 13;
-      ctx.fillStyle = 'rgba(0,0,0,0.38)';
+      ctx.fillStyle = 'rgba(0,0,0,0.40)';
       ctx.beginPath();
       ctx.ellipse(0, 0, shadowW, 3, 0, 0, Math.PI * 2);
       ctx.fill();
+
+      // Dibujar sprite del monstruo en el buffer offscreen (centrado en 40, 68)
+      mBufCtx.clearRect(0, 0, 80, 80);
+      mBufCtx.save();
+      mBufCtx.translate(40, 68);
+      const prevCtx = ctx;
+      // Helper local apuntando al buffer para mantener el código de los 14 monstruos limpio
+      const drawTarget = mBufCtx;
+      (function(ctx) {
 
       switch (mDef.style) {
         case 'goblin_lazy': {
@@ -2500,16 +2520,24 @@
         }
 
         case 'goblin_snot': {
-          // Goblin Lanza Mocos: nariz enorme con moco verde goteando + garrote pegajoso
+          // Goblin Lanza Mocos: nariz enorme, brillo en frente, cinturón, moco goteando y garrote
           ctx.fillStyle = c('#84cc16');
           ctx.fillRect(-10, -22, 18, 12); // cabeza
+          ctx.fillStyle = c('#bef264');
+          ctx.fillRect(-8, -21, 12, 2);   // brillo superior
+          ctx.fillStyle = c('#65a30d');
           ctx.fillRect(-15, -20, 5, 3);   // oreja izq
           ctx.fillRect(8, -20, 5, 3);     // oreja der
-          ctx.fillStyle = c('#65a30d');
           ctx.fillRect(-8, -10, 14, 8);   // torso
+          ctx.fillStyle = c('#78350f');
+          ctx.fillRect(-8, -5, 14, 3);    // taparrabos de cuero
+          ctx.fillStyle = c('#fbbf24');
+          ctx.fillRect(-2, -5, 3, 2);     // hebilla
           ctx.fillStyle = c('#4d7c0f');
           ctx.fillRect(-7, -3, 4, 3); ctx.fillRect(1, -3, 4, 3); // pies
-          // Ojos traviesos
+          // Cejas fruncidas + ojos traviesos con brillo
+          ctx.fillStyle = c('#365314');
+          ctx.fillRect(-8, -19, 5, 1); ctx.fillRect(-1, -19, 5, 1);
           ctx.fillStyle = c('#1b111a');
           ctx.fillRect(-7, -18, 3, 3); ctx.fillRect(0, -18, 3, 3);
           ctx.fillStyle = c('#fef08a');
@@ -2527,6 +2555,8 @@
           ctx.fillRect(-15, -12, 4, 9);
           ctx.fillStyle = c('#a3e635');
           ctx.fillRect(-16, -14, 6, 4);
+          ctx.fillStyle = c('#ecfccb');
+          ctx.fillRect(-15, -13, 2, 1);
           break;
         }
 
@@ -2920,8 +2950,38 @@
           break;
         }
       }
+      })(drawTarget);
+      mBufCtx.restore();
 
-      ctx.restore();
+      // Sombreado sutil de volumen (luz arriba / sombra abajo) dentro de la silueta del monstruo
+      if (!flash) {
+        mBufCtx.save();
+        mBufCtx.globalCompositeOperation = 'source-atop';
+        const volGrad = mBufCtx.createLinearGradient(0, 22, 0, 70);
+        volGrad.addColorStop(0, 'rgba(255, 255, 255, 0.14)');
+        volGrad.addColorStop(0.5, 'rgba(255, 255, 255, 0)');
+        volGrad.addColorStop(1, 'rgba(15, 8, 25, 0.24)');
+        mBufCtx.fillStyle = volGrad;
+        mBufCtx.fillRect(0, 0, 80, 80);
+        mBufCtx.restore();
+      }
+
+      // Generar silueta de contorno oscuro de 1px y estampar en los 4 ejes
+      mOutCtx.clearRect(0, 0, 80, 80);
+      mOutCtx.globalCompositeOperation = 'source-over';
+      mOutCtx.drawImage(monsterBuf, 0, 0);
+      mOutCtx.globalCompositeOperation = 'source-in';
+      mOutCtx.fillStyle = flash ? '#ffffff' : '#120c1a';
+      mOutCtx.fillRect(0, 0, 80, 80);
+
+      prevCtx.drawImage(monsterOut, -41, -68);
+      prevCtx.drawImage(monsterOut, -39, -68);
+      prevCtx.drawImage(monsterOut, -40, -69);
+      prevCtx.drawImage(monsterOut, -40, -67);
+      // Estampar sprite final nítido encima del contorno
+      prevCtx.drawImage(monsterBuf, -40, -68);
+
+      prevCtx.restore();
     }
 
     function drawLightRays(cx, cy, color = '#fde047') {
